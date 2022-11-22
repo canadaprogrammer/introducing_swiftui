@@ -23,3 +23,22 @@
    1. If the canvas isn't visible, select Editor > Canvas to show it.
 7. Inside the body property, change "Hello, World!" to a greeting for yourself.
    1. As you change the code in a view's body property, the preview updates to reflect your changes.
+
+#### Customize the Text View
+
+1. Customize the text view using the inspector.
+   1. In the preview, Command-click the greeting to bring up the structured editing popover, and choose "Show SwiftUI Inspector".
+      1. The popover shows different attributes that you can customize, depending on the type of view you inspect.
+      2. If it's not clickable, active Selectable on the left bottom
+      - <img src="./images/editing_popover.png" alt="Editing Popover" width="200"/>
+   2. Use the inspector to change the text to "Turtle Rock", the name of the first landmark you'll show in your app.
+   3. Change the Font modifier to "Title".
+      1. This applies the system font to the text so that it responds correctly to the user's preferred font sizes and settings.
+      - <img src="./images/swiftui_inspector.png" alt="SwiftUI Inspector" width="200"/>
+2. To customize a SwiftUI view, you call methods called modifiers. Modifiers wrap a view to change its display or other properties. Each modifier returns a new view, so it's common to chain multiple modifiers, stacked vertically.
+   1. Edit the code by hand to change the padding() modifier to the foreground Color(.green) modifier; this changes the text's color to green.
+   - `Text("Turtle Rock").font(.title).foregroundColor(Color.green)`
+3. Your code is always the source of truth for the view. When you use the inspector to change or remove a modifier, Xcode updates your code immediately to match.
+   1. Open the inspector by Command-clicking on the Text declaration in the code editor, and then choose "Show SwiftUI Inspector" from the popover. Click the color pop-up menu and choose Inherited to change the text color to black again.
+   2. Notice taht Xcode updates your code automatically to reflect the change, removing the forgroundColor(.green) modifier.
+   - <img src="./images/code_editor_popover.png" alt="Code Editor Popover" width="200"/>
