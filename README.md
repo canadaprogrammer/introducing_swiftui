@@ -58,6 +58,7 @@
       1. By default, stack center their contents alogn their axis and provide context-appropriate spacing.
       2. `VStack(alignment: .leading) {`
 4. Next, you'll add another text view to the right of the location, this for the park's state.
+
    1. In the canvas, Command-click "Joshua Tree National Park", and choose "Embed in HStack".
       1. <img src="./images/embed_hstack.png" alt="Embed in HStack" width="200"/>
    2. Add a new text view after the location, change the placeholder text to "California", the park's state, and then set its font to subheadline.
@@ -66,24 +67,75 @@
       1. A spacer expands to make its containing view use all of the space of its parent view, instead of having its size defined only by its contents.
    4. Finally, use the `padding()` modifier method to give the landmark's name and details a little more space.
 
-- ```swift
-  struct ContentView: View {
-      var body: some View {
-          VStack {
-              VStack(alignment: .leading) {
-                  Text("Turtle Rock")
-                      .font(.title)
-                      .foregroundColor(Color.black)
-                  HStack {
-                      Text("Joshua Tree National Park")
-                          .font(.subheadline)
-                      Spacer()
-                      Text("California")
-                          .font(.subheadline)
-                  }
-              }
-          }
-          .padding()
-      }
-  }
-  ```
+   - ```swift
+     struct ContentView: View {
+         var body: some View {
+             VStack {
+                 VStack(alignment: .leading) {
+                     Text("Turtle Rock")
+                         .font(.title)
+                         .foregroundColor(Color.black)
+                     HStack {
+                         Text("Joshua Tree National Park")
+                             .font(.subheadline)
+                         Spacer()
+                         Text("California")
+                             .font(.subheadline)
+                     }
+                 }
+             }
+             .padding()
+         }
+     }
+     ```
+
+   - <img src="./images/combine_veiw_stack.png" alt="Combine View using Stack" width="200"/>
+
+#### Create a Custom Image View
+
+1. Start by adding an image to the project's asset catalog.
+   1. Find turtlerock@2x.jpg in the project files' Resources folder; drag it into the asset catalog's editor. Xcode creates a new image set for the image.
+   2. <img src="./images/adding_image.png" alt="Adding Image" width="600"/>
+2. Next, you'll create a new SwiftUI view for your custom image view.
+   1. Choose File > New > File to open the template selector again.
+   2. In the User Interface section, select "SwiftUI View" and click Next. Name the file CircleImage.swift and click Create.
+3. You're ready to insert the image and modify its display to match the desired design.
+
+   1. Replace the: text view with the image of Turtle Rock by using the `Image(_:)` initializer, passing it the name of the image to display.
+      1. You can check the name in the asset catalog's editor.
+   2. Add a call to `clipShape(Circle())` to apply the circular clipping shape to the image.
+      1. The Circle type is a shape that you can use as a mask, or as a view by giving the circle a stroke of fill.
+      2. The shapes of `.clipShape()`:
+         1. `Circle()`
+         2. `Ellipse()`
+         3. `Capsule()`
+         4. `RoundedRectangle(cornerRadius: 25.0)`
+         5. `Rectangle()`
+   3. Create another circle with a gray stroke, and then add it as an overlay to give the image a border.
+      1. `.overlay { Circle().stroke(.gray, lineWidth: 4) }`
+   4. Next, add a shadow with a 7 point radius.
+      1. `.shadow(radius:7)`
+   5. Switch the border color to white.
+
+   - ```swift
+     import SwiftUI
+
+     struct CircleImage: View {
+         var body: some View {
+             Image("turtlerock")
+                 .clipShape(Circle())
+                 .overlay {
+                     Circle().stroke(.white, lineWidth: 4)
+                 }
+                 .shadow(radius: 7)
+         }
+     }
+
+     struct CircleImage_Previews: PreviewProvider {
+         static var previews: some View {
+             CircleImage()
+         }
+     }
+     ```
+
+   - <img src="./images/custom_image_view.png" alt="Custom Image View" width="200"/>
