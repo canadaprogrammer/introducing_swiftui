@@ -139,3 +139,34 @@
      ```
 
    - <img src="./images/custom_image_view.png" alt="Custom Image View" width="200"/>
+
+#### Use SwiftUI Views From Other Frameworks
+
+- You'll create a map that centers on a given coordinate. You can use the Map view from MapKit to render the map.
+
+1. To get started, you'll create a new custom view to manage your map.
+
+   1. Choose File > New > File, select iOS as the platform, select the "SwiftUI View" template, and click Next.
+      1. Name the new file MapView.swift and click Create.
+   2. Add an import statement for MapKit, `import MapKit`.
+      1. When you import SwiftUI and certain other frameworks in the same file, you gain access to SwiftUI-specific functionality provided by that framework.
+   3. Create a private state variable that holds the region information for the map.
+
+      1. You use the @State attribute to establish a source of truth for data in your app that you can modify from more than one view.
+      2. SwiftUI manages the underlying storage and automatically updates views that depend on the value.
+
+      - ```swift
+        @State private var region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 34.011_286, longitude: -116.166_868),
+            span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+        )
+        ```
+
+   4. Replace the default Text view with a Map view that takes a binding to the region.
+      1. By prefixing a state variable with $, you pass a binding, which is like a reference to the underlying value.
+      2. When the user interacts with the map, the map updates the region value to match the part of the map that's currently visible in the user interface.
+
+2. When previews are in static mode, they only fully render native SwiftUI views. For the Map view, you'll need to switch to a live preview to see it render.
+   1. Click Live Preview to switch the preview to live mode. You might need to click Try Again or Resume above your preview.
+      1. In a moment, you'll see a map centered on Turtle Rock.
+      2. You can manipulate the map in live preview to zoom out a bit and see the surrounding area.
