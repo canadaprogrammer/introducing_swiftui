@@ -170,3 +170,72 @@
    1. Click Live Preview to switch the preview to live mode. You might need to click Try Again or Resume above your preview.
       1. In a moment, you'll see a map centered on Turtle Rock.
       2. You can manipulate the map in live preview to zoom out a bit and see the surrounding area.
+
+#### Compose the Detail View
+
+- You new have all of the components you need - the name and place, a circular image, and a map for the location.
+- With the tools you've used so far, combine your custom views to create the final design for the landmark detail view.
+- <img src="./images/detail_view.png" alt="Detail View" width="300"/>
+
+1. In the Project navigator, select the ContentView.swift file
+2. Embed the VStack that holds the three text views in another VStack.
+3. Add your custom MapView tot he top of the stack. Set the size of the Map View with frame(width:height:).
+4. Click Live Preview to see the rendered map in the composed view.
+   1. You can continue editing the view whiile showing a Live Preview.
+5. Add the CircleImage view to the stack.
+6. To layer the image view on top of the map view, give the image an offset of -130 points vertically, and padding of -130 points from the bottom of the view.
+   1. These adjustments make room for the text by moving the image upwards.
+7. Add a spacer at the bottom of the outer VStack to push the content to the top of the screen.
+8. To allow the map content to extend to the top edge of the screen, add the ignoresSafeArea(edges: .top) modifier to the map view.
+9. Add a divider and some additional descriptive text for the landmark.
+10. Finally, move the subheadline font modifier from each Text view to the HStack containing them, and apply the secondary color to the subheadline text.
+    1. When you apply a modifier to a layout view like a stack, SwiftUI applies the modifier to all the elements contained in the group.
+
+- ContentView.swift
+
+  - ```swift
+      import SwiftUI
+
+      struct ContentView: View {
+          var body: some View {
+              VStack {
+                  MapView()
+                      .ignoresSafeArea(edges: .top)
+                      .frame(height:300)
+
+                  CircleImage()
+                      .offset(y:-130)
+                      .padding(.bottom, -130)
+
+                  VStack(alignment: .leading) {
+                      Text("Turtle Rock")
+                          .font(.title)
+                          .foregroundColor(Color.black)
+                      HStack {
+                          Text("Joshua Tree National Park")
+                          Spacer()
+                          Text("California")
+                      }
+                      .font(.subheadline)
+                      .foregroundColor(.secondary)
+
+                      Divider()
+
+                      Text("About Turtle Rock")
+                          .font(.title2)
+                      Text("Descriptive text goes here.")
+
+                  }
+                  .padding()
+
+                  Spacer()
+              }
+          }
+      }
+
+      struct ContentView_Previews: PreviewProvider {
+          static var previews: some View {
+              ContentView()
+          }
+      }
+    ```
