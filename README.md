@@ -6,6 +6,13 @@
 
 ### Creating and Combining Views
 
+- This tutorial guides you through building Landmarks - an app for discovering and sharing the places you love.
+- You'll start by building the view that shows a landmark's details.
+- To lay out the views, Landkmarks uses `VStack` and `HStack` to combine and layer the image and text view components.
+- To add a map to the view, you 'll include a standard `MapKit` component.
+
+- [Project files](https://docs-assets.developer.apple.com/published/9637262be4dfa3661d596e567d0c793f/CreatingAndCombiningViews.zip)
+
 #### Create a New Project and Explore the Canvas
 
 1. Open Xcode and either click "Create a new Xcode project" in Xcode's startup window, or choose File > New > Project.
@@ -265,3 +272,170 @@
           }
       }
     ```
+
+---
+
+### Building Lists and Navigation
+
+- You'll create views that can show information about any landmark,
+- and dynamically generate a scrolling list that a user can tap to see a detail view for a landmark.
+
+- [Project files](https://docs-assets.developer.apple.com/published/58c23eda8649a103c25ce8f2b8d7547a/BuildingListsAndNavigation.zip)
+
+#### Create a Landmark Model
+
+- You'll create a model to store data that you can pass into your view.
+
+1. Drag landmarkData.json in the downloaded files' Resources folder into your project's navigation pane;
+   1. in the dialog that appears, select "Copy items if needed" and the Landmarks target, and then click Finish.
+   2. You will use this sample data throughout the remainder of this tutorial, and for all that follow.
+2. Choose File > New > File to create a new `Swift file` in your project, and name it Landmark.swift.
+3. Define a Landmark structure with a few properties matching names of some of the keys in the landmarkData.json data file.
+
+   - ```json
+     [
+       {
+         "name": "Turtle Rock",
+         "category": "Rivers",
+         "city": "Twentynine Palms",
+         "state": "California",
+         "id": 1001,
+         "isFeatured": true,
+         "isFavorite": true,
+         "park": "Joshua Tree National Park",
+         "coordinates": {
+           "longitude": -116.166868,
+           "latitude": 34.011286
+         },
+         "description": "Suscipit inceptos est ...",
+         "imageName": "turtlerock"
+       },
+       {
+         "": ""
+       }
+     ]
+     ```
+
+   1. Adding Codable conformance makes it easier to move data between the structure and a data file.
+   2. You'll reply on the Decodable component of the Codable protocol later in this section to read data from file.
+
+   - ```swift
+      import Foundation
+
+      struct Landmark: Hashable, Codable {
+          var id: Int
+          var name: String
+          var park: String
+          var state: String
+          var description: String
+      }
+     ```
+
+4. Model the image associated with each landmark.
+   1. Drag the JPG files from the downloaded files' Resources folder into your project's asset catalog.
+      1. Xcode creates a new image set for each image.
+      2. <img src="./images/asset_catalog_images.png" alt="Asset Catalog Images" width="400"/>
+5. Add an `imageName` property to read the name of the image from the data, and a computed image property that loads an image from the asset catalog.
+
+   1. You make the property `private` because users of the Landmarks structure care only about the image itself.
+
+      - ```swift
+          ...
+          import SwiftUI
+
+          struct Landmark: Hashable, Codable {
+              ...
+
+              private var imageName: String
+              var image: Image {
+                  Image(imageName)
+              }
+          }
+        ```
+
+6. Manage information about the landmark's location.
+
+   1. Add a `coordinates` property to the structure using a `nested Coordinates type` that reflects the storage in the JSON data structure.
+
+      1. You mark this property as `private` because you'll use it only to create a public computed property in the next step.
+
+         - ```swift
+             ...
+             struct Landmark: Hashable, Codable {
+                 ...
+
+                 struct Coordinates: Hashable, Codable {
+                     var latitude: Double
+                     var longitude: Double
+                 }
+                 private var coordinates: Coordinates
+             }
+           ```
+
+7. Compute a `locationCoordinate` property that's useful for interacting with the MapKit framework.
+
+   - ```swift
+       ...
+       import CoreLocation
+
+       struct Landmark: Hashable, Codable {
+           ...
+           var locationCoordinate: CLLocationCoordinate2D {
+               CLLocationCoordinate2D(
+                   latitude: coordinates.latitude,
+                   longitude: coordinates.longitude
+               )
+           }
+       }
+     ```
+
+8. Create an array initialized with landmarks from a file.
+
+   1. Create a new `Swift file` in your project and name it ModelData.swift
+   2. Create a `load(_:)` method that fetches JSON data with a given name from the app's main bundle.
+
+      1. The load method relies on the return type's conformance to the Decodable protocol, which is one component of the Codable protocol.
+
+      - ```swift
+          import Foundation
+
+          func load<T: Decodable>(_ filename: String) -> T {
+              let data: Data
+
+              guard let file = Bundle.main.url(forResource: filename, withExtension: nil) else {
+                  fatalError("Couldn't find \(filename) in main bundle.")
+              }
+
+              do {
+                  data = try Data(contentsOf: file)
+              } catch {
+                  fatalError("Couldn't load \(filename) from main bundle:\n\(error)")
+              }
+
+              do {
+                  let decoder = JSONDecoder()
+                  return try decoder.decode(T.self, from: data)
+              } catch {
+                  fatalError("Couldn't parse \(filename) as \(T.self):\n\(error)")
+              }
+          }
+        ```
+
+   3. Create an array of landmarks that you initialize from landmarkData.json
+
+      - ```swift
+          import Foundation
+
+          var landmarks: [Landmark] = load("landmarkData.json")
+          ...
+        ```
+
+9. Group related files together to make it easier to manage your growing project.
+
+   1. Put ContentView.swift, CircleImage.swift, and MapView.swift into a Views group,
+   2. landmarkData.json in a Resources group,
+   3. and Landmark.swift and ModelData.swift into a Model group.
+      1. You can create groups of existing items by selecting the items to add to the group,
+      2. and then choosing File > New > Group from Selection in the Xcode menu.
+
+   - <img src="./images/model_group.png" alt="Group" width="200"/>
