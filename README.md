@@ -68,25 +68,25 @@
    4. Finally, use the `padding()` modifier method to give the landmark's name and details a little more space.
 
    - ```swift
-     struct ContentView: View {
-         var body: some View {
-             VStack {
-                 VStack(alignment: .leading) {
-                     Text("Turtle Rock")
-                         .font(.title)
-                         .foregroundColor(Color.black)
-                     HStack {
-                         Text("Joshua Tree National Park")
-                             .font(.subheadline)
-                         Spacer()
-                         Text("California")
-                             .font(.subheadline)
-                     }
-                 }
-             }
-             .padding()
-         }
-     }
+      struct ContentView: View {
+          var body: some View {
+              VStack {
+                  VStack(alignment: .leading) {
+                      Text("Turtle Rock")
+                          .font(.title)
+                          .foregroundColor(Color.black)
+                      HStack {
+                          Text("Joshua Tree National Park")
+                              .font(.subheadline)
+                          Spacer()
+                          Text("California")
+                              .font(.subheadline)
+                      }
+                  }
+              }
+              .padding()
+          }
+      }
      ```
 
    - <img src="./images/combine_veiw_stack.png" alt="Combine View using Stack" width="200"/>
@@ -118,24 +118,24 @@
    5. Switch the border color to white.
 
    - ```swift
-     import SwiftUI
+      import SwiftUI
 
-     struct CircleImage: View {
-         var body: some View {
-             Image("turtlerock")
-                 .clipShape(Circle())
-                 .overlay {
-                     Circle().stroke(.white, lineWidth: 4)
-                 }
-                 .shadow(radius: 7)
-         }
-     }
+      struct CircleImage: View {
+          var body: some View {
+              Image("turtlerock")
+                  .clipShape(Circle())
+                  .overlay {
+                      Circle().stroke(.white, lineWidth: 4)
+                  }
+                  .shadow(radius: 7)
+          }
+      }
 
-     struct CircleImage_Previews: PreviewProvider {
-         static var previews: some View {
-             CircleImage()
-         }
-     }
+      struct CircleImage_Previews: PreviewProvider {
+          static var previews: some View {
+              CircleImage()
+          }
+      }
      ```
 
    - <img src="./images/custom_image_view.png" alt="Custom Image View" width="200"/>
@@ -156,10 +156,10 @@
       2. SwiftUI manages the underlying storage and automatically updates views that depend on the value.
 
       - ```swift
-        @State private var region = MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 34.011_286, longitude: -116.166_868),
-            span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
-        )
+          @State private var region = MKCoordinateRegion(
+              center: CLLocationCoordinate2D(latitude: 34.011_286, longitude: -116.166_868),
+              span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+          )
         ```
 
    4. Replace the default Text view with a Map view that takes a binding to the region.
@@ -167,9 +167,31 @@
       2. When the user interacts with the map, the map updates the region value to match the part of the map that's currently visible in the user interface.
 
 2. When previews are in static mode, they only fully render native SwiftUI views. For the Map view, you'll need to switch to a live preview to see it render.
+
    1. Click Live Preview to switch the preview to live mode. You might need to click Try Again or Resume above your preview.
       1. In a moment, you'll see a map centered on Turtle Rock.
       2. You can manipulate the map in live preview to zoom out a bit and see the surrounding area.
+
+   - ```swift
+       import SwiftUI
+       import MapKit
+
+       struct MapView: View {
+           @State private var region = MKCoordinateRegion(
+               center: CLLocationCoordinate2D(latitude:34.011, longitude: -116.166),
+               span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+           )
+           var body: some View {
+               Map(coordinateRegion: $region)
+           }
+       }
+
+       struct MapView_Previews: PreviewProvider {
+           static var previews: some View {
+               MapView()
+           }
+       }
+     ```
 
 #### Compose the Detail View
 
@@ -179,15 +201,19 @@
 
 1. In the Project navigator, select the ContentView.swift file
 2. Embed the VStack that holds the three text views in another VStack.
-3. Add your custom MapView tot he top of the stack. Set the size of the Map View with frame(width:height:).
+3. Add your custom MapView tot he top of the stack. Set the size of the Map View with `.frame(height:300)`.
 4. Click Live Preview to see the rendered map in the composed view.
-   1. You can continue editing the view whiile showing a Live Preview.
+   1. You can continue editing the view while showing a Live Preview.
 5. Add the CircleImage view to the stack.
-6. To layer the image view on top of the map view, give the image an offset of -130 points vertically, and padding of -130 points from the bottom of the view.
+6. To layer the image view on top of the map view, give the image an offset of -130 points vertically, `.offset(y:-130)`, and padding of -130 points from the bottom of the view, `.padding(.bottom, -130)`.
    1. These adjustments make room for the text by moving the image upwards.
-7. Add a spacer at the bottom of the outer VStack to push the content to the top of the screen.
-8. To allow the map content to extend to the top edge of the screen, add the ignoresSafeArea(edges: .top) modifier to the map view.
-9. Add a divider and some additional descriptive text for the landmark.
+7. Add a `Spacer()` at the bottom of the outer VStack to push the content to the top of the screen.
+8. To allow the map content to extend to the top edge of the screen, add the `.ignoresSafeArea(edges: .top)` modifier to the map view.
+   1. The modifier needs to put right after `MapView()`, so before `.frame()`.
+      1. The height of map increases as much as the safe area.
+   2. If the modifier locates after `.frame()`, the map will go up.
+      1. The height of map keeps 300.
+9. Add a `Divider()` and some additional descriptive text for the landmark.
 10. Finally, move the subheadline font modifier from each Text view to the HStack containing them, and apply the secondary color to the subheadline text.
     1. When you apply a modifier to a layout view like a stack, SwiftUI applies the modifier to all the elements contained in the group.
 
