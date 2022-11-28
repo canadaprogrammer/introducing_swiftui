@@ -438,4 +438,65 @@
       1. You can create groups of existing items by selecting the items to add to the group,
       2. and then choosing File > New > Group from Selection in the Xcode menu.
 
-   - <img src="./images/model_group.png" alt="Group" width="200"/>
+   -
+
+#### Create the Row View
+
+- This row view stores information in a property for the landmark it displays, so that one view can display any landmark.
+- Later, you'll combine multiple rows into a list of landmarks.
+- <img src="./images/row_view.png" alt="Row View" width="400"/>
+
+1. Create a new SwiftUI view in the Views group named LandmarkRow.swift.
+2. Add landmark as a stored property of LandmarkRow.
+
+   1. When you add the landmark property, the preview stops working, because the LandmarkRow type needs a landmark instance during initialization.
+
+   - ```swift
+     struct LandmarkRow: View {
+       var landmark: Landmark
+       ...
+     }
+     ```
+
+3. To fix the preview, you'll need to modify the preview provider.
+
+   1. In the preview static property of LandmarkRow_Previews,
+   2. add the landmark parameter to the LandmarkRow initializer,
+   3. specifying the first element of the landmark array.
+
+   - ```swift
+      ...
+      struct LandmarkRow_Previews: PreviewProvider {
+          static var previews: some View {
+              LandmarkRow(landmark: landmark[0])
+          }
+      }
+     ```
+
+4. With the fixed, you can build the layout for the row.
+   1. Embed the existing text view in an HStack.
+   2. Modify the text view to use the landmark property's name.
+   3. Complete the row by adding an image before the text view, and a spacer after it.
+
+- ```swift
+  import SwiftUI
+
+  struct LandmarkRow: View {
+      var landmark: Landmark
+      var body: some View {
+          HStack {
+              landmark.image
+                  .resizable()
+                  .frame(width: 50, height: 50)
+              Text(landmark.name)
+              Spacer()
+          }
+      }
+  }
+
+  struct LandmarkRow_Previews: PreviewProvider {
+      static var previews: some View {
+          LandmarkRow(landmark: landmark[0])
+      }
+  }
+  ```
