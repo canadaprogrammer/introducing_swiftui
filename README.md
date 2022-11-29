@@ -500,3 +500,49 @@
       }
   }
   ```
+
+#### Customize the Row Preview
+
+- A preview provider returns one or more views, with options to configure the size and device.
+
+1. In LandmarkRow_Previews, update the landmark parameter to be the second element in the landmark array, `landmark[1]`.
+   1. The preview immediately changes to show the second sample landmark instead of the first.
+2. Use the previewLayout(\_:) modifier to set a size that approximates a row in a list.
+3. You can use a Group to return multiple previews from a preview provider.
+
+   1. Wrap the returned row in a Group, and add the first row back again.
+
+      1. Group is a container for grouping view content. Xcode renders the group's child views as separate previews in the canvas.
+
+      - ```swift
+            struct LandmarkRow_Previews: PreviewProvider {
+                static var previews: some View {
+                    Group {
+                        LandmarkRow(landmark: landmark[0])
+                            .previewLayout(.fixed(width: 300, height: 70))
+                        LandmarkRow(landmark: landmark[1])
+                            .previewLayout(.fixed(width: 300, height: 70))
+                    }
+                }
+            }
+        ```
+
+      - <img src="./images/preview_group.png" alt="Preview Group" width="200"/>
+
+   2. To simplify the code, move the preview Layout(\_:) call to the outside of the group's child declarations.
+
+      1. A view's children inherit the view's contextual settings, such as preview configurations.
+
+      - ```swift
+            struct LandmarkRow_Previews: PreviewProvider {
+                static var previews: some View {
+                    Group {
+                        LandmarkRow(landmark: landmark[0])
+                        LandmarkRow(landmark: landmark[1])
+                    }
+                    .previewLayout(.fixed(width: 300, height: 70))
+                }
+            }
+        ```
+
+4. The code you write in a preview provider only changes what Xcode displays in the canvas.
