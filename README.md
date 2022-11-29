@@ -546,3 +546,35 @@
         ```
 
 4. The code you write in a preview provider only changes what Xcode displays in the canvas.
+
+#### Create the List of Landmarks
+
+- When you use SwiftUI's List type, you can display a platform-specific list of views.
+- The elements of the list can be static, like the child views of the stacks you've created so far, or dynamically generated.
+- You can even mix static and dynamically generated views.
+
+1. Create a new SwiftUI view in the Views group named LandmarkList.swift.
+2. Replace the default Text view with a List, and provide LandmarkRow instances with the first two landmarks as the list's children.
+
+   1. The preview shows the two landmarks rendered in a list style that's appropriate for iOS.
+
+   - ```swift
+       import SwiftUI
+
+       struct LandmarkList: View {
+           var body: some View {
+               List {
+                   LandmarkRow(landmark: landmark[0])
+                   LandmarkRow(landmark: landmark[1])
+               }
+           }
+       }
+
+       struct LandmarkList_Previews: PreviewProvider {
+           static var previews: some View {
+               LandmarkList()
+           }
+       }
+     ```
+
+   - <img src="./images/list_of_landmarks.png" alt="List of Landmarks" width="200"/>
