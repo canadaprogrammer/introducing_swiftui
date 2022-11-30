@@ -578,3 +578,39 @@
      ```
 
    - <img src="./images/list_of_landmarks.png" alt="List of Landmarks" width="200"/>
+
+#### Make the List Dynamic
+
+- Instead of specifying a list's elements individually, you can generate rows directly from a collection.
+- The list transforms each element in the collection into a child view by using the supplied closure.
+
+1. Remove the two static landmark rows, and instead pass the model data's landmarks array to the List initializer.
+
+   1. List work with identifiable data.
+   2. You can make your data identifiable in one of two ways:
+      1. by passing along with your data a key path to a property that uniquely identifies each element,
+      2. or by making your data type conform to the Identifiable protocol.
+   3. This creates one LandmarkRow for each element in the landmarks array.
+
+   - ```swift
+        ...
+        struct LandmarkList: View {
+            var body: some View {
+                List(landmark, id: \.id) {
+                    landmark in LandmarkRow(landmark: landmark)
+                }
+            }
+        }
+        ...
+     ```
+
+   - <img src="./images/dynamic_list.png" alt="Dynamic List" width="200"/>
+
+2. Simplify the List code by adding Identifiable conformance to the Landmark type.
+   1. Switch to Landmark.swift and declare conformance to the Identifiable protocol.
+      1. The Landmark data already has the id property required by `Identifiable` protocol;
+         1. `struct Landmark: Hashable, Codable, Identifiable {`
+      2. you only need to add a property to decode it when reading the data.\
+   2. Switch back to LandmarkList.swift and remove the id parameter.
+      1. `List(landmark) {`
+      2. From now on, you'll be able to use collections of Landmark elements directly.
