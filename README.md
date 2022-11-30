@@ -610,7 +610,97 @@
    1. Switch to Landmark.swift and declare conformance to the Identifiable protocol.
       1. The Landmark data already has the id property required by `Identifiable` protocol;
          1. `struct Landmark: Hashable, Codable, Identifiable {`
-      2. you only need to add a property to decode it when reading the data.\
+      2. you only need to add a property to decode it when reading the data.
    2. Switch back to LandmarkList.swift and remove the id parameter.
       1. `List(landmark) {`
       2. From now on, you'll be able to use collections of Landmark elements directly.
+
+#### Set up Navigation Between List and Detail
+
+- Add navigation capabilities to a list by embedding it in a NavigationView,
+- and then nesting each row in a NavigationLink to set up a transition to a destination view.
+
+1. Prepare a detail view using the content you created in the previous tutorial and update the main content view to display the list view instead.
+
+   1. Create a new SwiftUI view named LandmarkDetail.swift.
+   2. Copy the contents of the body property from ContentView into LandmarkDetail.
+
+      - ```swift
+            ...
+            struct LandmarkDetail: View {
+                var body: some View {
+                    VStack {
+                        MapView()
+                            .ignoresSafeArea(edges: .top)
+                            .frame(height:300)
+
+                        CircleImage()
+                            .offset(y:-130)
+                            .padding(.bottom, -130)
+
+                        VStack(alignment: .leading) {
+                            Text("Turtle Rock")
+                                .font(.title)
+                                .foregroundColor(Color.black)
+                            HStack {
+                                Text("Joshua Tree National Park")
+                                Spacer()
+                                Text("California")
+                            }
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+
+                            Divider()
+
+                            Text("About Turtle Rock")
+                                .font(.title2)
+                            Text("Descriptive text goes here.")
+
+                        }
+                        .padding()
+
+                        Spacer()
+                    }
+                }
+            }
+            ...
+        ```
+
+   3. Change ContentView to instead display LandmarkList.
+
+      - ```swift
+            ...
+            struct ContentView: View {
+                var body: some View {
+                    LandmarkList()
+                }
+            }
+            ...
+        ```
+
+2. Add navigation among your list and detail views.
+
+   1. On `LandmarkList.swift`, embed the dynamically generated list of landmarks in a NavigationView.
+   2. Call the navigationTitle(\_:) modifier method to set the title of the navigation bar when displaying the list.
+   3. Inside the list's closure, wrap the returned row in a NavigationLink, specifying the LandmarkDetail view as the destination.
+
+   - ```swift
+        ...
+        struct LandmarkList: View {
+            var body: some View {
+                NavigationView {
+                    List(landmark) { landmark in
+                        NavigationLink {
+                            LandmarkDetail()
+                        } label: {
+                            LandmarkRow(landmark: landmark)
+                        }
+                        .navigationTitle("Landmarks")
+                    }
+                }
+            }
+        }
+        ...
+     ```
+
+   - <img src="./images/navigation.png" alt="Navigation" width="200"/>
