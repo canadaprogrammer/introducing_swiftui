@@ -704,3 +704,145 @@
      ```
 
    - <img src="./images/navigation.png" alt="Navigation" width="200"/>
+
+#### Pass Data into Child View
+
+- Starting with the child views, you'll convert CircleImage, MapView, and then LandmarkDetail to display data that's passed in, rather than hard-coding each row.
+
+1. In CircleImage.swift,
+
+   1. add a stored image property to CircleImage.
+      1. This is common pattern when building views using SwiftUI. Your custom views will often wrap and encapsulate a series of modifiers for a particular view.
+   2. Update the preview provider to pass the image of Turtle Rock.
+      1. Even though you've fixed the preview logic, the review fails to update because the build fails.
+      2. The detail view, which instantiates a circle image, needs an input parameter as well.
+
+   - ```swift
+      import SwiftUI
+
+      struct CircleImage: View {
+          var image: Image
+
+          var body: some View {
+              image
+                  .clipShape(Circle())
+                  .overlay {
+                      Circle().stroke(.white, lineWidth: 4)
+                  }
+                  .shadow(radius: 7)
+          }
+      }
+
+      struct CircleImage_Previews: PreviewProvider {
+          static var previews: some View {
+              CircleImage(image: Image("turtlerock"))
+          }
+      }
+     ```
+
+2. In MapView.swift,
+
+   1. add a coordinate property to MapView and update the preview provider to pass a fixed coordinate.
+      1. This change also affects the build because the detail view has a map view that needs the new parameter.
+   2. Add a method that updates the region based on a coordinate value.
+   3. Add an onAppear view modifier to the map that triggers a calculation of the region based on the current coordinate.
+
+   - ```swift
+      import SwiftUI
+      import MapKit
+
+      struct MapView: View {
+          var coordinate: CLLocationCoordinate2D
+          @State private var region = MKCoordinateRegion()
+
+          var body: some View {
+              Map(coordinateRegion: $region)
+                  .onAppear {
+                      setRegion(coordinate)
+                  }
+          }
+
+          private func setRegion(_ coordinate: CLLocationCoordinate2D) {
+              region = MKCoordinateRegion(
+                  center: coordinate,
+                  span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+              )
+          }
+      }
+
+      struct MapView_Previews: PreviewProvider {
+          static var previews: some View {
+              MapView(coordinate: CLLocationCoordinate2D(latitude: 33.6444, longitude: -117.913))
+          }
+      }
+     ```
+
+3. In LandmarkDetail.swift,
+
+   1. add a Landmark property to the LandmarkDetail type.
+
+      - ```swift
+          ...
+          struct LandmarkDetail: View {
+              var landmark: Landmark
+              ...
+
+          struct LandmarkDetail_Previews: PreviewProvider {
+              static var previews: some View {
+                  LandmarkDetail(landmark: landmark[0])
+              }
+          }
+        ```
+
+   2. pass the required data to your custom types.
+   3. Change the container from a VStack to a ScrollView so the user can scroll through the descriptive content,
+   4. and delete the Spacer, which you no longer need.
+   5. Call the navigationTitle(\_:) modifier to give the navigation bar a title when showing the detail view,
+   6. and the navigation BarTitleDisplayMode(\_:) modifier to make the title appear inline.
+      1. The navigation changes only have an effect when the view is part of a navigation stack.
+
+   - ```swift
+      ...
+      var body: some View {
+          ScrollView {
+              MapView(coordinate: landmark.locationCoordinates)
+                  ...
+
+              CircleImage(image: landmark.image)
+                  ...
+
+              VStack(alignment: .leading) {
+                  Text(landmark.name)
+                      ..
+                  HStack {
+                      Text(landmark.park)
+                      Spacer()
+                      Text(landmark.state)
+                  }
+                  ..
+
+                  Divider()
+
+                  Text("About \(landmark.name)")
+                      .font(.title2)
+                  Text(landmark.description)
+
+              }
+              .padding()
+          }
+          .navigationTitle(landmark.name)
+          .navigationBarTitleDisplayMode(.inline)
+      }
+      ...
+     ```
+
+4. In LandmarkList.swift, pass the current landmark to the destination Landmark Detail.
+
+   - ```swift
+      ...
+                      NavigationLink {
+                        LandmarkDetail(landmark: landmark)
+                        ...
+     ```
+
+   - <img src="./images/list_view-2.png" alt="List View" width="200"/> <img src="./images/detail_view-2.png" alt="Detail View" width="200"/>
