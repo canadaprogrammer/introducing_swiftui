@@ -846,3 +846,42 @@
      ```
 
    - <img src="./images/list_view-2.png" alt="List View" width="200"/> <img src="./images/detail_view-2.png" alt="Detail View" width="200"/>
+
+#### Generate Previews Dynamically
+
+- You'll add code to the LandmarkList_Previews preview provider to render previews of the list view at different device sizes.
+- By default, previews render at the size of the device in the active scheme.
+- You can change the preview device by calling the previewDevice(\_:) modifier mothod.
+
+1. Start by changing the current list preview to render at the size of an iPhone SE on LandmarkList.swift.
+
+   1. You can provide the name of any device as it appears in Xcode's scheme menu.
+
+   - ```swift
+      ...
+      struct LandmarkList_Previews: PreviewProvider {
+          static var previews: some View {
+              LandmarkList()
+                  .previewDevice(PreviewDevice(rawValue: "iPhone SE (3rd generation)"))
+          }
+      }
+     ```
+
+2. Within the list preview, embed the Landmark List in a ForEach instance, using an array of device names as the data.
+   1. ForEach operates on collections the same way as the list, which means you can use it anywhere you can use a child view,
+   2. such as in stacks, lists, groups, and more.
+   3. When the elements of your data are simply value types - like the strings you're using here - you can use \.self as key path to the identifier.
+3. Use the previewDisplayName(\_:) modifier to add the device names as labels for the previews.
+4. You can experiment with different devices to compare the renderings of your views, all from the canvas.
+
+   - ```swift
+      static var previews: some View {
+          ForEach(["iPhone SE (3rd generation)", "iPhone 14 Pro Max"], id: \.self) { deviceName in
+              LandmarkList()
+                  .previewDevice(PreviewDevice(rawValue: deviceName))
+                  .previewDisplayName(deviceName)
+          }
+      }
+     ```
+
+   - <img src="./images/multiple_device_preview.png" alt="Multiple Device Preview" width="400"/>
