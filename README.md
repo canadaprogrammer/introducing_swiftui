@@ -885,3 +885,32 @@
      ```
 
    - <img src="./images/multiple_device_preview.png" alt="Multiple Device Preview" width="400"/>
+
+### Handling User Input
+
+- In the Landmarks app, a user can flag their favorite places, and filter the list to show just their favorites.
+- To create this feature, you'll start by adding a switch to the list so users cna focus on just their favorites,
+- and then you'll add a star-shaped button that a user taps to flag a landmark as a favorite.
+
+#### Mark the User's Favorite Landmarks
+
+1. Select Landmark.swift in the Project navigator.
+2. Add an isFavorite property, `var isFavorite: Bool`, to the Landmark structure.
+   1. The landmarkData.json file has a key with this name for each landmark.
+   2. Because Landmark conforms to Codable, you can read the value associated with the key
+   3. by creating a new property with the same name as the key.
+3. Select LandmarkRow.swift in the Project navigator.
+4. After the spacer, add a star image inside an if statement to test whether the current landmark is a favorite.
+   1. In SwiftUI blocks, you use if statements to conditionally include views.
+5. Because system images are vector based, you can change their color with the foregroundColor(\_:) modifier.
+
+   1. The star is present whenever a landmark's isFavorite property is true.
+
+   - ```swift
+      if landmark.isFavorite {
+          Image(systemName: "star.fill")
+              .foregroundColor(.yellow)
+      }
+     ```
+
+   - <img src="./images/isFavorite.png" alt="Multiple Device Preview" width="200"/>
