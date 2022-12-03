@@ -914,3 +914,36 @@
      ```
 
    - <img src="./images/isFavorite.png" alt="Multiple Device Preview" width="200"/>
+
+#### Filter the List View
+
+- To Filtering, you'll need to add a bit of state to the landmarkList type.
+- State is a value, or set of values, that can change over time, and that affects a view's behavior, content, or layout.
+- You use a property with the `@State` attribute to add state to a view.
+
+1. Select LandmarkList.swift and revert the preview to show only a single version of the list.
+2. Add a `@State` property called showFavoritesOnly with its initial value set to `false`, `@State private var showFavoritesOnly = false`
+   1. Because you use the state properties to hold information that's specific a view and its subviews, you always create state as private.
+3. Compute a filtered version of the landmarks list by checking the showFavoritesOnly property and each landmark.isFavorite value.
+4. Use the filtered version of the list of landmarks in the List.
+
+   - ```swift
+      ...
+      struct LandmarkList: View {
+          @State private var showFavoritesOnly = true
+          var filteredLandmarks: [Landmark] {
+              landmark.filter { landmark in
+                  (!showFavoritesOnly || landmark.isFavorite)
+              }
+          }
+          var body: some View {
+              NavigationView {
+                  List(filteredLandmarks) { landmark in
+                   ...
+     ```
+
+   - <img src="./images/show_all.png" alt="Show All" width="200"/>
+
+5. Change the initial value of showFavoritesOnly to `true` to see how the list reacts.
+
+   - <img src="./images/show_favorites.png" alt="Show Favorites" width="200"/>
