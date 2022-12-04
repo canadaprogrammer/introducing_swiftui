@@ -287,10 +287,9 @@
 - You'll create a model to store data that you can pass into your view.
 
 1. Drag landmarkData.json in the downloaded files' Resources folder into your project's navigation pane;
+
    1. in the dialog that appears, select "Copy items if needed" and the Landmarks target, and then click Finish.
    2. You will use this sample data throughout the remainder of this tutorial, and for all that follow.
-2. Choose File > New > File to create a new `Swift file` in your project, and name it Landmark.swift.
-3. Define a Landmark structure with a few properties matching names of some of the keys in the landmarkData.json data file.
 
    - ```json
      [
@@ -316,8 +315,11 @@
      ]
      ```
 
-   1. Adding Codable conformance makes it easier to move data between the structure and a data file.
-   2. You'll reply on the Decodable component of the Codable protocol later in this section to read data from file.
+2. Choose File > New > File to create a new `Swift file` in your project, and name it Landmark.swift.
+3. Define a Landmark structure with a few properties matching names of some of the keys in the landmarkData.json data file.
+
+   1. Adding `Codable` conformance makes it easier **to move data between the structure and a data file**.
+   2. You'll reply on the `Decodable` component of the Codable protocol later in this section **to read data from file**.
 
    - ```swift
       import Foundation
@@ -438,7 +440,7 @@
       1. You can create groups of existing items by selecting the items to add to the group,
       2. and then choosing File > New > Group from Selection in the Xcode menu.
 
-   -
+   - <img src="./images/grouping_files.png" alt="Grouping Files" width="200"/>
 
 #### Create the Row View
 
@@ -468,7 +470,7 @@
       ...
       struct LandmarkRow_Previews: PreviewProvider {
           static var previews: some View {
-              LandmarkRow(landmark: landmark[0])
+              LandmarkRow(landmark: landmarks[0])
           }
       }
      ```
@@ -496,7 +498,7 @@
 
   struct LandmarkRow_Previews: PreviewProvider {
       static var previews: some View {
-          LandmarkRow(landmark: landmark[0])
+          LandmarkRow(landmark: landmarks[0])
       }
   }
   ```
@@ -518,9 +520,9 @@
             struct LandmarkRow_Previews: PreviewProvider {
                 static var previews: some View {
                     Group {
-                        LandmarkRow(landmark: landmark[0])
+                        LandmarkRow(landmark: landmarks[0])
                             .previewLayout(.fixed(width: 300, height: 70))
-                        LandmarkRow(landmark: landmark[1])
+                        LandmarkRow(landmark: landmarks[1])
                             .previewLayout(.fixed(width: 300, height: 70))
                     }
                 }
@@ -537,8 +539,8 @@
             struct LandmarkRow_Previews: PreviewProvider {
                 static var previews: some View {
                     Group {
-                        LandmarkRow(landmark: landmark[0])
-                        LandmarkRow(landmark: landmark[1])
+                        LandmarkRow(landmark: landmarks[0])
+                        LandmarkRow(landmark: landmarks[1])
                     }
                     .previewLayout(.fixed(width: 300, height: 70))
                 }
@@ -564,8 +566,8 @@
        struct LandmarkList: View {
            var body: some View {
                List {
-                   LandmarkRow(landmark: landmark[0])
-                   LandmarkRow(landmark: landmark[1])
+                   LandmarkRow(landmark: landmarks[0])
+                   LandmarkRow(landmark: landmarks[1])
                }
            }
        }
@@ -596,8 +598,8 @@
         ...
         struct LandmarkList: View {
             var body: some View {
-                List(landmark, id: \.id) {
-                    landmark in LandmarkRow(landmark: landmark)
+                List(landmarks, id: \.id) { landmark in
+                    LandmarkRow(landmark: landmark)
                 }
             }
         }
@@ -805,7 +807,7 @@
       ...
       var body: some View {
           ScrollView {
-              MapView(coordinate: landmark.locationCoordinates)
+              MapView(coordinate: landmark.locationCoordinate)
                   ...
 
               CircleImage(image: landmark.image)
