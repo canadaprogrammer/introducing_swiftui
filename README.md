@@ -24,6 +24,7 @@
     - [Handling User Input](#handling-user-input)
       - [Mark the User's Favorite Landmarks](#mark-the-users-favorite-landmarks)
       - [Filter the List View](#filter-the-list-view)
+      - [Add a Control to Toggle the State](#add-a-control-to-toggle-the-state)
 
 ## SwiftUI Essentials
 
@@ -974,3 +975,47 @@
 5. Change the initial value of showFavoritesOnly to `true` to see how the list reacts.
 
    - <img src="./images/show_favorites.png" alt="Show Favorites" width="200"/>
+
+#### Add a Control to Toggle the State
+
+- To give the user control over the list's filter, you need to add a control that can alter the value of `showFavoritesOnly`.
+- You do this by passing a binding to a toggle control.
+
+1. Create a nested `ForEach` group to transform the landmarks into rows.
+   1. **To combine static and dynamic views in a list**, or **to combine two or more different groups of dynamic views**, **use the `ForEach` type** instead of passing your collection of data to List.
+2. Add a `Toggle` view as the first child of the List view, passing a binding to `showFavoritesOnly`.
+   1. You use the $ prefix to access a binding to a state variable, or one of its properties.
+3. Before moving on, return the default value of `showFavoritesOnly` to `false`.
+
+   - ```swift
+      import SwiftUI
+
+      struct LandmarkList: View {
+          @State private var showFavoritesOnly = false
+
+          var filteredLandmarks: [Landmark] {
+              landmark.filter { landmark in
+                  (!showFavoritesOnly || landmark.isFavorite)
+              }
+          }
+          var body: some View {
+              NavigationView {
+                  List {
+                      Toggle(isOn: $showFavoritesOnly) {
+                          Text("Favorites Only")
+                      }
+                      ForEach(filteredLandmarks) { landmark in
+                          NavigationLink {
+                              LandmarkDetail(landmark: landmark)
+                          } label: {
+                              LandmarkRow(landmark: landmark)
+                          }
+                          .navigationTitle("Landmarks")
+                      }
+                  }
+              }
+          }
+      }
+     ```
+
+   - <img src="./images/toggle_state.png" alt="Toggle State" width="200"/>
