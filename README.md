@@ -1,5 +1,30 @@
 # Introducing SwiftUI
 
+## Table of Contents
+
+- [Introducing SwiftUI](#introducing-swiftui)
+  - [Table of Contents](#table-of-contents)
+  - [SwiftUI Essentials](#swiftui-essentials)
+    - [Creating and Combining Views](#creating-and-combining-views)
+      - [Create a New Project and Explore the Canvas](#create-a-new-project-and-explore-the-canvas)
+      - [Customize the Text View](#customize-the-text-view)
+      - [Combine Views Using Stacks](#combine-views-using-stacks)
+      - [Create a Custom Image View](#create-a-custom-image-view)
+      - [Use SwiftUI Views From Other Frameworks](#use-swiftui-views-from-other-frameworks)
+      - [Compose the Detail View](#compose-the-detail-view)
+    - [Building Lists and Navigation](#building-lists-and-navigation)
+      - [Create a Landmark Model](#create-a-landmark-model)
+      - [Create the Row View](#create-the-row-view)
+      - [Customize the Row Preview](#customize-the-row-preview)
+      - [Create the List of Landmarks](#create-the-list-of-landmarks)
+      - [Make the List Dynamic](#make-the-list-dynamic)
+      - [Set up Navigation Between List and Detail](#set-up-navigation-between-list-and-detail)
+      - [Pass Data into Child View](#pass-data-into-child-view)
+      - [Generate Previews Dynamically](#generate-previews-dynamically)
+    - [Handling User Input](#handling-user-input)
+      - [Mark the User's Favorite Landmarks](#mark-the-users-favorite-landmarks)
+      - [Filter the List View](#filter-the-list-view)
+
 ## SwiftUI Essentials
 
 - Learn how to use SwiftUI to compose rich views out of simple ones, set up data flow, and build the navigation while watching it unfold in Xcode's preview.
