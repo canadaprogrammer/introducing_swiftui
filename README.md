@@ -1,9 +1,6 @@
 # Introducing SwiftUI
 
-## Table of Contents
-
 - [Introducing SwiftUI](#introducing-swiftui)
-  - [Table of Contents](#table-of-contents)
   - [SwiftUI Essentials](#swiftui-essentials)
     - [Creating and Combining Views](#creating-and-combining-views)
       - [Create a New Project and Explore the Canvas](#create-a-new-project-and-explore-the-canvas)
@@ -25,6 +22,7 @@
       - [Mark the User's Favorite Landmarks](#mark-the-users-favorite-landmarks)
       - [Filter the List View](#filter-the-list-view)
       - [Add a Control to Toggle the State](#add-a-control-to-toggle-the-state)
+      - [Use an Observable Object for Storage](#use-an-observable-object-for-storage)
 
 ## SwiftUI Essentials
 
@@ -1019,3 +1017,29 @@
      ```
 
    - <img src="./images/toggle_state.png" alt="Toggle State" width="200"/>
+
+#### Use an Observable Object for Storage
+
+- To prepare for the user to control which particular landmarks are favorites, you'll first store the landmark data in an observable object.
+- An observable object is a custom object for your data that can be bound to a view from storage in SwiftUI's environment.
+- SwiftUI watches for any changes to observable objects that could affect a view, and displays the correct version of the view after a change.
+
+1. In the project's navigation pane, select ModelData.swift.
+2. Declare a new model type that conforms to the ObservableObject protocol from the Combine framework.
+   1. SwiftUI subscribes to your observable object, and updates any views that need refreshing when the data changes.
+3. Move the landmarks array into the model.
+4. An observable object needs to publish any changes to its data, so that its subscribers can pick up the changes.
+
+   1. Add the `@Published` attribute to the landmarks array.
+
+   - ```swift
+      ...
+      import Combine
+
+      final class ModelData: ObservableObject {
+          @Published var landmark: [Landmark] = load("landmarkData.json")
+      }
+
+      func load<T: Decodable>(_ filename: String) -> T {
+        ...
+     ```
