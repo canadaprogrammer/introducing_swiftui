@@ -24,6 +24,7 @@
       - [Add a Control to Toggle the State](#add-a-control-to-toggle-the-state)
       - [Use an Observable Object for Storage](#use-an-observable-object-for-storage)
       - [Adopt the Model Object in Your Views](#adopt-the-model-object-in-your-views)
+      - [Create a Favorite Button for Each Landmark](#create-a-favorite-button-for-each-landmark)
 
 ## SwiftUI Essentials
 
@@ -62,24 +63,24 @@
    1. In the preview, Command-click the greeting to bring up the structured editing popover, and choose "Show SwiftUI Inspector".
       1. The popover shows different attributes that you can customize, depending on the type of view you inspect.
       2. If it's not clickable, active Selectable on the left bottom
-      - <img src="./images/editing_popover.png" alt="Editing Popover" width="200"/>
+      - <img src="./resources/images/editing_popover.png" alt="Editing Popover" width="200"/>
    2. Use the inspector to change the text to "Turtle Rock", the name of the first landmark you'll show in your app.
    3. Change the Font modifier to "Title".
       1. This applies the system font to the text so that it responds correctly to the user's preferred font sizes and settings.
-      - <img src="./images/swiftui_inspector.png" alt="SwiftUI Inspector" width="200"/>
+      - <img src="./resources/images/swiftui_inspector.png" alt="SwiftUI Inspector" width="200"/>
 2. To customize a SwiftUI view, you call methods called modifiers. Modifiers wrap a view to change its display or other properties. Each modifier returns a new view, so it's common to chain multiple modifiers, stacked vertically.
    1. Edit the code by hand to change the padding() modifier to the foreground Color(.green) modifier; this changes the text's color to green.
    - `Text("Turtle Rock").font(.title).foregroundColor(Color.green)`
 3. Your code is always the source of truth for the view. When you use the inspector to change or remove a modifier, Xcode updates your code immediately to match.
    1. Open the inspector by Command-clicking on the Text declaration in the code editor, and then choose "Show SwiftUI Inspector" from the popover. Click the color pop-up menu and choose Inherited to change the text color to black again.
    2. Notice that Xcode updates your code automatically to reflect the change, removing the forgroundColor(.green) modifier.
-   - <img src="./images/code_editor_popover.png" alt="Code Editor Popover" width="200"/>
+   - <img src="./resources/images/code_editor_popover.png" alt="Code Editor Popover" width="200"/>
 
 #### Combine Views Using Stacks
 
 1. You can use Xcode's structured editing support to embed a view in a container view, open an inspector, or help with other useful changes.
    1. Command-click the text view's initializer to show the structured editing popover, and then choose "Embed in VStack".
-      1. <img src="./images/embed_vstack.png" alt="Embed in VStack" width="200"/>
+      1. <img src="./resources/images/embed_vstack.png" alt="Embed in VStack" width="200"/>
 2. Next, you'll add a text view to the stack by dragging a Text view from the library.
    1. Open the library by clicking the plus button (+) at the top-right of the Xcode window, and then drag a Text view to the place in your code immediately below the "Turtle Rock" text view.
    2. Replace the Text view's placeholder text with "Joshua Tree National Park".
@@ -92,7 +93,7 @@
 4. Next, you'll add another text view to the right of the location, this for the park's state.
 
    1. In the canvas, Command-click "Joshua Tree National Park", and choose "Embed in HStack".
-      1. <img src="./images/embed_hstack.png" alt="Embed in HStack" width="200"/>
+      1. <img src="./resources/images/embed_hstack.png" alt="Embed in HStack" width="200"/>
    2. Add a new text view after the location, change the placeholder text to "California", the park's state, and then set its font to subheadline.
       1. `Text("California").font(.subheadline)`
    3. To direct the layout to use the full width of the device, separate the park and the state by adding a `Spacer()` to the horizontal stack holding the two text views.
@@ -121,13 +122,13 @@
       }
      ```
 
-   - <img src="./images/combine_veiw_stack.png" alt="Combine View using Stack" width="200"/>
+   - <img src="./resources/images/combine_veiw_stack.png" alt="Combine View using Stack" width="200"/>
 
 #### Create a Custom Image View
 
 1. Start by adding an image to the project's asset catalog.
    1. Find turtlerock@2x.jpg in the project files' Resources folder; drag it into the asset catalog's editor. Xcode creates a new image set for the image.
-   2. <img src="./images/adding_image.png" alt="Adding Image" width="600"/>
+   2. <img src="./resources/images/adding_image.png" alt="Adding Image" width="600"/>
 2. Next, you'll create a new SwiftUI view for your custom image view.
    1. Choose File > New > File to open the template selector again.
    2. In the User Interface section, select "SwiftUI View" and click Next. Name the file CircleImage.swift and click Create.
@@ -170,7 +171,7 @@
       }
      ```
 
-   - <img src="./images/custom_image_view.png" alt="Custom Image View" width="200"/>
+   - <img src="./resources/images/custom_image_view.png" alt="Custom Image View" width="200"/>
 
 #### Use SwiftUI Views From Other Frameworks
 
@@ -229,7 +230,7 @@
 
 - You new have all of the components you need - the name and place, a circular image, and a map for the location.
 - With the tools you've used so far, combine your custom views to create the final design for the landmark detail view.
-- <img src="./images/detail_view.png" alt="Detail View" width="300"/>
+- <img src="./resources/images/detail_view.png" alt="Detail View" width="300"/>
 
 1. In the Project navigator, select the ContentView.swift file
 2. Embed the VStack that holds the three text views in another VStack.
@@ -361,7 +362,7 @@
 4. Model the image associated with each landmark.
    1. Drag the JPG files from the downloaded files' Resources folder into your project's asset catalog.
       1. Xcode creates a new image set for each image.
-      2. <img src="./images/asset_catalog_images.png" alt="Asset Catalog Images" width="400"/>
+      2. <img src="./resources/images/asset_catalog_images.png" alt="Asset Catalog Images" width="400"/>
 5. Add an `imageName` property to read the name of the image from the data, and a computed image property that loads an image from the asset catalog.
 
    1. You make the property `private` because users of the Landmarks structure care only about the image itself.
@@ -465,13 +466,13 @@
       1. You can create groups of existing items by selecting the items to add to the group,
       2. and then choosing File > New > Group from Selection in the Xcode menu.
 
-   - <img src="./images/grouping_files.png" alt="Grouping Files" width="200"/>
+   - <img src="./resources/images/grouping_files.png" alt="Grouping Files" width="200"/>
 
 #### Create the Row View
 
 - This row view stores information in a property for the landmark it displays, so that one view can display any landmark.
 - Later, you'll combine multiple rows into a list of landmarks.
-- <img src="./images/row_view.png" alt="Row View" width="400"/>
+- <img src="./resources/images/row_view.png" alt="Row View" width="400"/>
 
 1. Create a new SwiftUI view in the Views group named LandmarkRow.swift.
 2. Add landmark as a stored property of LandmarkRow.
@@ -554,7 +555,7 @@
             }
         ```
 
-      - <img src="./images/preview_group.png" alt="Preview Group" width="200"/>
+      - <img src="./resources/images/preview_group.png" alt="Preview Group" width="200"/>
 
    2. To simplify the code, move the preview Layout(\_:) call to the outside of the group's child declarations.
 
@@ -604,7 +605,7 @@
        }
      ```
 
-   - <img src="./images/list_of_landmarks.png" alt="List of Landmarks" width="200"/>
+   - <img src="./resources/images/list_of_landmarks.png" alt="List of Landmarks" width="200"/>
 
 #### Make the List Dynamic
 
@@ -631,7 +632,7 @@
         ...
      ```
 
-   - <img src="./images/dynamic_list.png" alt="Dynamic List" width="200"/>
+   - <img src="./resources/images/dynamic_list.png" alt="Dynamic List" width="200"/>
 
 2. Simplify the List code by adding Identifiable conformance to the Landmark type.
    1. Switch to Landmark.swift and declare conformance to the Identifiable protocol.
@@ -730,7 +731,7 @@
         ...
      ```
 
-   - <img src="./images/navigation.png" alt="Navigation" width="200"/>
+   - <img src="./resources/images/navigation.png" alt="Navigation" width="200"/>
 
 #### Pass Data into Child View
 
@@ -872,7 +873,7 @@
                         ...
      ```
 
-   - <img src="./images/list_view-2.png" alt="List View" width="200"/> <img src="./images/detail_view-2.png" alt="Detail View" width="200"/>
+   - <img src="./resources/images/list_view-2.png" alt="List View" width="200"/> <img src="./resources/images/detail_view-2.png" alt="Detail View" width="200"/>
 
 #### Generate Previews Dynamically
 
@@ -911,7 +912,7 @@
       }
      ```
 
-   - <img src="./images/multiple_device_preview.png" alt="Multiple Device Preview" width="400"/>
+   - <img src="./resources/images/multiple_device_preview.png" alt="Multiple Device Preview" width="400"/>
 
 ### Handling User Input
 
@@ -940,7 +941,7 @@
       }
      ```
 
-   - <img src="./images/isFavorite.png" alt="Multiple Device Preview" width="200"/>
+   - <img src="./resources/images/isFavorite.png" alt="Multiple Device Preview" width="200"/>
 
 #### Filter the List View
 
@@ -969,11 +970,11 @@
                    ...
      ```
 
-   - <img src="./images/show_all.png" alt="Show All" width="200"/>
+   - <img src="./resources/images/show_all.png" alt="Show All" width="200"/>
 
 5. Change the initial value of showFavoritesOnly to `true` to see how the list reacts.
 
-   - <img src="./images/show_favorites.png" alt="Show Favorites" width="200"/>
+   - <img src="./resources/images/show_favorites.png" alt="Show Favorites" width="200"/>
 
 #### Add a Control to Toggle the State
 
@@ -1017,7 +1018,7 @@
       }
      ```
 
-   - <img src="./images/toggle_state.png" alt="Toggle State" width="200"/>
+   - <img src="./resources/images/toggle_state.png" alt="Toggle State" width="200"/>
 
 #### Use an Observable Object for Storage
 
@@ -1109,3 +1110,81 @@
               }
           }
         ```
+
+#### Create a Favorite Button for Each Landmark
+
+1. Create a reusable Favorite Button.
+
+   1. Create a SwiftUI view called FavoriteButton.swift
+   2. Add an isSet binding that indicates the button's current state, and provide a constant value for the preview.
+   3. Create a Button with an action that toggles the isSet state, and that changes its appearance based on the state.
+      1. The title string that you provide for the button's label doesn't appear in the UI when you use the iconOnly label style,
+      2. but VoiceOver uses it to improve accessibility.
+
+   - ```swift
+      import SwiftUI
+
+      struct FavoriteButton: View {
+          @Binding var isSet: Bool
+
+          var body: some View {
+              Button {
+                  isSet.toggle()
+              } label: {
+                  Label("Toggle Favorite", systemImage: isSet ? "star.fill" : "star")
+                      .labelStyle(.iconOnly)
+                      .foregroundColor(isSet ? .yellow : .gray)
+              }
+          }
+      }
+
+      struct FavoriteButton_Previews: PreviewProvider {
+          static var previews: some View {
+              FavoriteButton(isSet: .constant(true))
+          }
+      }
+     ```
+
+2. As your project grows, it's a good idea to add hierarchy. Before moving on, create a few more groups.
+
+   1. Collect the general purpose CircleImage.swift, MapView.swift, and FavoriteButton.swift, into a `Helpers` group,
+   2. and the landmark views into a `Landmarks` group.
+
+   - <img src="./resources/images/group_views.png" alt="Group Views" width="200"/>
+
+3. Add the FavoriteButton to the detail view, binding the button's isSet property to the isFavorite property of a given landmark.
+
+   1. Switch to LandmarkDetail.swift, and compute the index of the input landmark by comparing it with the model data.
+      1. To support this, you also need access to the environment's model data.
+   2. Embed the landmark's name in an HStack with a new FavoriteButton; provide a binding to the isFavorite property with the collar sign ($).
+
+      1. Use landmarkIndex with the modelData object to ensure that the button updates the isFavorite property of the landmark stored in your model object.
+
+      - ```swift
+          import SwiftUI
+
+          struct LandmarkDetail: View {
+              @EnvironmentObject var modelData: ModelData
+              var landmark: Landmark
+
+              var landmarkIndex: Int {
+                  modelData.landmark.firstIndex(where: {$0.id == landmark.id})!
+              }
+              ...
+                      VStack(alignment: .leading) {
+                          HStack {
+                              Text(landmark.name)
+                                  .font(.title)
+                              FavoriteButton(isSet: $modelData.landmark[landmarkIndex].isFavorite)
+                          }
+                          ...
+        ```
+
+   3. Switch back to LandmarkList.swift, and turn on the live preview.
+
+      1. As you navigate from the list to the detail and tap the button, those changes presis when you return to the list.
+      2. Because both views access the same model object in the environment, the two views maintain consistency.
+
+      - <video width="250" height="514" controls>
+           <source src="./resources/videos/favorite_button.mp4" type="video/mp4">
+        </video>
