@@ -23,6 +23,7 @@
       - [Filter the List View](#filter-the-list-view)
       - [Add a Control to Toggle the State](#add-a-control-to-toggle-the-state)
       - [Use an Observable Object for Storage](#use-an-observable-object-for-storage)
+      - [Adopt the Model Object in Your Views](#adopt-the-model-object-in-your-views)
 
 ## SwiftUI Essentials
 
@@ -1043,3 +1044,68 @@
       func load<T: Decodable>(_ filename: String) -> T {
         ...
      ```
+
+#### Adopt the Model Object in Your Views
+
+1. In `LandmarkList.swift`, add an `@EnvironmentObject` property declaration to the view, and an environment Object(\_:) modifier to the preview.
+   1. The modelData property gets its value automatically, as long as the environment Object(\_:) modifier has been applied to a parent.
+2. Use modelData.landmarks as the data when filtering landmarks.
+
+   - ```swift
+      import SwiftUI
+      struct LandmarkList: View {
+          @EnvironmentObject var modelData: ModelData
+          @State private var showFavoritesOnly = false
+
+          var filteredLandmarks: [Landmark] {
+              modelData.landmark.filter { landmark in
+              ...
+      struct LandmarkList_Previews: PreviewProvider {
+          static var previews: some View {
+              LandmarkList()
+                  .environmentObject(ModelData())
+                  ...
+     ```
+
+3. Update the `LandmarkDetail` preview to work with the ModelData object in the environment.
+
+   - ```swift
+      static var previews: some View {
+          LandmarkDetail(landmark: ModelData().landmark[0])
+      }
+     ```
+
+4. Update the `LandmarkRow` preview to work with the ModelData object.
+
+   - ```swift
+      struct LandmarkRow_Previews: PreviewProvider {
+          static var landmark = ModelData().landmark
+     ```
+
+5. Update the `ContentView` preview to add the model object to the environment, which makes the object available to any subview.
+
+   1. A preview fails if any subview requires a model object in the environment, but the view you are previewing doesn't have the environment Object(\_:) modifier.
+
+   - ```swift
+      static var previews: some View {
+          ContentView().environmentObject(ModelData())
+     ```
+
+6. Update the app instance to put the model object in the environment when you run the app in the simulator or on a device.
+
+   1. Update the `LandmarksApp` to create a model instance and supply it to ContentView using the environmentObject(\_:) modifier.
+
+      1. Use the @StateObject attribute to initialize a model object for a given property only once during the life time of the app.
+      2. This is true when you use the attribute in an app instance, as shown here, as well as you use it in a view.
+
+      - ```swift
+          struct LandmarksApp: App {
+              @StateObject private var modelData = ModelData()
+              var body: some Scene {
+                  WindowGroup {
+                      ContentView()
+                          .environmentObject(modelData)
+                  }
+              }
+          }
+        ```
