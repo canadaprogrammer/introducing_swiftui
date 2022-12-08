@@ -28,6 +28,7 @@
   - [Drawing and Animation](#drawing-and-animation)
     - [Drawing Paths and Shapes](#drawing-paths-and-shapes)
       - [Create Drawing Data for a Badge View](#create-drawing-data-for-a-badge-view)
+      - [Draw the Badge Background](#draw-the-badge-background)
 
 ## SwiftUI Essentials
 
@@ -1264,3 +1265,145 @@
           ]
       }
      ```
+
+#### Draw the Badge Background
+
+- Use the graphics APIs in SwiftUI to draw a custom badge shape.
+
+1. Create another new file with File > New > File, this time selecting SwiftUI View from the iOS Templates sheet.
+   1. Click Next and then name the file `BadgeBackground.swift`.
+2. In BadgeBackground.swift, add a Path shape to the badge and apply the `fill()` modifier to turn the shape into a view.
+   1. You use paths to combine lines, curves, and other drawing primitives to form more complex shapes like the badge's hexagonal background.
+3. Add a starting point to the path, assuming a container with size 100 x 100 px.
+   1. The `move(to:)` method moves the drawing cursor within the bounds of a shape as though an imaginary pen or pencil is hovering over the area, waiting to start drawing.
+4. Draw the lines for each point of the shape dta to create a rough hexagonal shape.
+
+   1. The `addLine(to:)` method takes a single point and draws it.
+   2. Successive calls to `addLine(to:)` begin a line at the previous point and continue to the new point.
+
+   - ```swift
+      import SwiftUI
+
+      struct BadgeBackground: View {
+          var body: some View {
+              Path { path in
+                  var width: CGFloat = 100.0
+                  let height = width
+                  path.move(
+                      to: CGPoint(
+                          x: width * 0.95,
+                          y: height * 0.20
+                      )
+                  )
+                  HexagonParameters.segments.forEach { segment in
+                      path.addLine(
+                          to: CGPoint(
+                              x: width * segment.line.x,
+                              y: height * segment.line.y
+                          )
+                      )
+                  }
+              }
+              .fill(.black)
+          }
+      }
+
+      struct BadgeBackground_Previews: PreviewProvider {
+          static var previews: some View {
+              BadgeBackground()
+          }
+      }
+     ```
+
+   - <img src="./resources/images/unusual_hex.png" alt="Unusual Hexagon" width="50"/>
+
+5. Don't worry if the hexagon looks a little unusual; that's because you're ignoring the curved part of each segment at the shape's corners.
+6. Use the `addQuadCurve(to:control:)` method to draw the Bezier curve for the badge's corners.
+
+   - ```swift
+      ...
+            path.move(
+                to: CGPoint(
+                    x: width * 0.95,
+                    y: height * (0.20 + HexagonParameters.adjustment)
+                )
+            )
+            HexagonParameters.segments.forEach { segment in
+                ...
+                path.addQuadCurve(
+                    to: CGPoint(
+                        x: width * segment.curve.x,
+                        y: height * segment.curve.y
+                    ),
+                    control: CGPoint(
+                        x: width * segment.control.x,
+                        y: height * segment.control.y
+                    )
+                )
+                ...
+     ```
+
+   - <img src="./resources/images/hex.png" alt="Hexagon" width="50"/>
+
+7. Wrap the path in a GeometryReader so the badge can use the size of its containing view, which defines the size instead of hard-coding the value (100).
+
+   1. Using the smallest of the geometry's two dimensions preserves the aspect ratio of the badge when its containing view isn't square.
+
+      - ```swift
+          ...
+          var body: some View {
+              GeometryReader { geometry in
+                  Path { path in
+                      var width: CGFloat = min(geometry.size.width, geometry.size.height)
+                      ...
+        ```
+
+8. Scale the shape on the x-axis using xScale, and then add xOffset to recenter the shape within its geometry.
+
+   - ```swift
+      ...
+      Path { path in
+          var width: CGFloat = min(geometry.size.width, geometry.size.height)
+          let height = width
+          let xScale: CGFloat = 0.832
+          let xOffset = (width * (1.0 - xScale)) / 2.0
+          width *= xScale
+          path.move(
+              to: CGPoint(
+                  x: width * 0.95 + xOffset,
+                  ...
+          HexagonParameters.segments.forEach { segment in
+              path.addLine(
+                  to: CGPoint(
+                      x: width * segment.line.x + xOffset,
+                      ...
+              path.addQuadCurve(
+                  to: CGPoint(
+                      x: width * segment.curve.x + xOffset,
+                      ...
+                  control: CGPoint(
+                      x: width * segment.control.x + xOffset,
+                      ...
+     ```
+
+9. Replace the solid black background with a gradient to match the design.
+10. apply the aspectRatio(\_:contentMode:) modifier to the gradient fill.
+
+    1. By preserving a 1:1 aspect ratio, the badge maintains its position at the center of the view, even if its ancestor views aren't square.
+
+       - ```swift
+           ...
+                   .fill(.linearGradient(
+                       Gradient(colors: [Self.gradientStart, Self.gradientEnd]),
+                       startPoint: UnitPoint(x: 0.5, y: 0),
+                       endPoint: UnitPoint(x: 0.5, y: 0.6)
+                   ))
+               }
+               .aspectRatio(1, contentMode: .fit)
+           }
+           static let gradientStart = Color(red: 239.0 / 255, green: 120.0 / 255, blue: 221.0 / 255)
+           static let gradientEnd = Color(red: 239.0 / 255, green: 172.0 / 255, blue: 120.0 / 255)
+           ...
+         ```
+
+       - <img src="./resources/images/badge_background.png" alt="Badge Background" width="50"/>
