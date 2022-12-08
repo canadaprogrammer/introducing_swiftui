@@ -25,6 +25,9 @@
       - [Use an Observable Object for Storage](#use-an-observable-object-for-storage)
       - [Adopt the Model Object in Your Views](#adopt-the-model-object-in-your-views)
       - [Create a Favorite Button for Each Landmark](#create-a-favorite-button-for-each-landmark)
+  - [Drawing and Animation](#drawing-and-animation)
+    - [Drawing Paths and Shapes](#drawing-paths-and-shapes)
+      - [Create Drawing Data for a Badge View](#create-drawing-data-for-a-badge-view)
 
 ## SwiftUI Essentials
 
@@ -1188,3 +1191,76 @@
       - <video width="250" height="514" controls>
            <source src="./resources/videos/favorite_button.mp4" type="video/mp4">
         </video>
+
+## Drawing and Animation
+
+- Discover how to draw shapes and paths to create a badge that you'll animate, while also creating seamless transitions between views.
+
+### Drawing Paths and Shapes
+
+#### Create Drawing Data for a Badge View
+
+- To create the badge, you'll start by defining data that you can use to draw a hexagon shape for the badge's background.
+  - <img src="./resources/images/badge.png" alt="Group Views" width="200"/>
+
+1. With the Views group selected in the navigation pane, choose File > New > File, select Swift File from the iOS Templates sheet, and click next.
+2. Name the new file HexagonParameters.swift.
+   1. You'll use this structure to define the shape of a hexagon.
+3. Inside the new file, create a structure called HexagonParameters.
+4. Define a Segment structure to hold the three points that represent one side of the hexagon; import CoreGraphics so you can use CPPoint.
+   1. Each side starts where the previous ends,
+   2. moves in a straight line to the first point,
+   3. and then moves over the Bezier curve at the corner to the second point.
+   4. The third point controls the shape of the curve.
+5. Create an array to hold segments.
+6. Add data for the six segments, one for each side of the hexagon.
+   1. The values are stored as a fraction of a unit square having its origin in the upper left, with positive x to the right and positive y down.
+   2. Later, you'll use these fractions to find the acctual points of a hexagon with a given size.
+7. Add an adjustment value that lets you tune the shape of the hexagon.
+
+   - ```swift
+      import Foundation
+
+      struct HexagonParameters {
+          struct Segment {
+              let line: CGPoint
+              let curve: CGPoint
+              let control: CGPoint
+          }
+
+          static let adjustment: CGFloat = 0.085
+
+          static let segments = [
+              Segment(
+                  line:    CGPoint(x: 0.60, y: 0.05),
+                  curve:   CGPoint(x: 0.40, y: 0.05),
+                  control: CGPoint(x: 0.50, y: 0.00)
+              ),
+              Segment(
+                  line:    CGPoint(x: 0.05, y: 0.20 + adjustment),
+                  curve:   CGPoint(x: 0.00, y: 0.30 + adjustment),
+                  control: CGPoint(x: 0.00, y: 0.25 + adjustment)
+              ),
+              Segment(
+                  line:    CGPoint(x: 0.00, y: 0.70 - adjustment),
+                  curve:   CGPoint(x: 0.05, y: 0.80 - adjustment),
+                  control: CGPoint(x: 0.00, y: 0.75 - adjustment)
+              ),
+              Segment(
+                  line:    CGPoint(x: 0.40, y: 0.95),
+                  curve:   CGPoint(x: 0.60, y: 0.95),
+                  control: CGPoint(x: 0.50, y: 1.00)
+              ),
+              Segment(
+                  line:    CGPoint(x: 0.95, y: 0.80 - adjustment),
+                  curve:   CGPoint(x: 1.00, y: 0.70 - adjustment),
+                  control: CGPoint(x: 1.00, y: 0.75 - adjustment)
+              ),
+              Segment(
+                  line:    CGPoint(x: 1.00, y: 0.30 + adjustment),
+                  curve:   CGPoint(x: 0.95, y: 0.20 + adjustment),
+                  control: CGPoint(x: 1.00, y: 0.25 + adjustment)
+              )
+          ]
+      }
+     ```
