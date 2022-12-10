@@ -30,6 +30,7 @@
       - [Create Drawing Data for a Badge View](#create-drawing-data-for-a-badge-view)
       - [Draw the Badge Background](#draw-the-badge-background)
       - [Draw the Badge Symbol](#draw-the-badge-symbol)
+      - [Combine the Badge Foreground and Background](#combine-the-badge-foreground-and-background)
 
 ## SwiftUI Essentials
 
@@ -1489,16 +1490,82 @@
 
               var body: some View {
                   BadgeSymbol()
-                      .padding(100)
+                      .padding(-60)
                       .rotationEffect(angle, anchor: .bottom)
               }
           }
 
           struct RotatedBadgeSymbol_Previews: PreviewProvider {
               static var previews: some View {
-                  RotatedBadgeSymbol(angle: Angle(degrees: 25))
+                  RotatedBadgeSymbol(angle: Angle(degrees: 5))
               }
           }
         ```
 
       - <img src="./resources/images/draw_badge_symbol.png" alt="Draw Badge Symbol" width="200"/>
+
+#### Combine the Badge Foreground and Background
+
+- Define a new type for rotation and leverage the ForEach view to apply the same adjustments to multiple copies of the mountain shape.
+- <img src="./resources/images/rotate_mountain.png" alt="Rotate Badge Shape" width="200"/>
+
+1. Create a new SwiftUI view called Badge.
+2. Place BadgeBackground in the body of Badge.
+3. Lay the badge's symbol over the the badge background by placing it in a ZStack.
+4. As it appears now, the badge symbol is too large compoared to the intended design and relative size of the background.
+
+   1. Correct the size of the badge symbol by reading the surrounding geometry and scaling the symbol.
+
+   - ```swift
+      import SwiftUI
+
+      struct Badge: View {
+          var badgeSymbols: some View {
+              RotatedBadgeSymbol(angle: Angle(degrees: 0))
+                  .opacity(0.5)
+          }
+          var body: some View {
+              ZStack {
+                  BadgeBackground()
+                  GeometryReader { geometry in
+                      badgeSymbols
+                          .scaleEffect(1.0 / 4.0, anchor: .top)
+                          .position(x: geometry.size.width / 2.0, y: (3.0 / 4.0) * geometry.size.height)
+                  }
+              }
+          }
+      }
+
+      struct Badge_Previews: PreviewProvider {
+          static var previews: some View {
+              Badge()
+          }
+      }
+     ```
+
+5. Add a ForEach view to rotate and display copies of the badge symbol.
+
+   1. A full, 360° rotation split into eight segments creates a sun-like pattern by repeating the mountain symbol.
+
+   - ```swift
+      var badgeSymbols: some View {
+          ForEach(0..<8) { index in
+              RotatedBadgeSymbol(
+                  angle: .degrees(Double(index) / Double(8)) * 360.0
+              )
+          }
+          .opacity(0.5)
+      }
+      var body: some View {
+          ZStack {
+              ...
+          }
+          .scaledToFit()
+      }
+     ```
+
+     - <img src="./resources/images/combine_badge.png" alt="Combine Badge" width="200"/>
+
+6. To keep the project organized, collect badge vies into a Badges group.
+
+   - <img src="./resources/images/badge_views.png" alt="Badge Views" width="200"/>
