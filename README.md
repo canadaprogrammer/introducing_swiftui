@@ -29,6 +29,7 @@
     - [Drawing Paths and Shapes](#drawing-paths-and-shapes)
       - [Create Drawing Data for a Badge View](#create-drawing-data-for-a-badge-view)
       - [Draw the Badge Background](#draw-the-badge-background)
+      - [Draw the Badge Symbol](#draw-the-badge-symbol)
 
 ## SwiftUI Essentials
 
@@ -1199,6 +1200,8 @@
 
 ### Drawing Paths and Shapes
 
+- [Project files](https://docs-assets.developer.apple.com/published/e08d353171a36c3834ffec37760ab0cb/DrawingPathsAndShapes.zip)
+
 #### Create Drawing Data for a Badge View
 
 - To create the badge, you'll start by defining data that you can use to draw a hexagon shape for the badge's background.
@@ -1407,3 +1410,95 @@
          ```
 
        - <img src="./resources/images/badge_background.png" alt="Badge Background" width="50"/>
+
+#### Draw the Badge Symbol
+
+- The Landmarks badge has a custom insignia in its center that's based on the mountain that appears in the Landmarks app icon.
+- The mountain symbol consists of two shapes: one that represents a snowcap at the peak, and the other that represents vegetation along the approach.
+- You'll draw them using two partially triangular shapes that are set apart by a small gap.
+- <img src="./resources/images/badge_symbol.png" alt="Badge Symbol" width="200"/>
+
+1. First you'll give your app an icon, to establish a look for the badge.
+   1. Delete the empty AppIcon item from your project's Asset Catalog, and then drag the AppIcon.appiconset folder form the downloaded projects' Resources folder into the Asset catalog.
+      1. Xcode recognizes the folder as containing al the size variations of an app icon and creates a corresponding item in the catalog.
+2. Next, you'll build the matching badge symbol.
+
+   1. Create a new custom view called BadgeSymbol for the mountain shape that's stamped in a rotated pattern in the badge design.
+   2. Draw the top portion of the symbol using the path APIs.
+      1. Adjust the numberic mulitpliers associated with the spacing, topWidth, and topHeight constants to see how they influence the overall shape.
+   3. Draw the bottom portion of the symbol.
+      1. Use the move(to:) modifier to insert a gap between multiple shapes in the smae path.
+   4. Fill the symbol with the purple color from the design.
+
+      - ```swift
+          import SwiftUI
+
+          struct BadgeSymbol: View {
+              static let symbolColor = Color(red: 79.0 / 255, green: 79.0 / 255, blue: 191.0 / 255)
+
+              var body: some View {
+                  GeometryReader { geometry in
+                      Path { path in
+                          let width = min(geometry.size.width, geometry.size.height)
+                          let height = width * 0.75
+                          let spacing = width * 0.030
+                          let middle = width * 0.5
+                          let topWidth = width * 0.226
+                          let topHeight = height * 0.488
+
+                          path.addLines([
+                              CGPoint(x: middle, y: spacing),
+                              CGPoint(x: middle - topWidth, y: topHeight - spacing),
+                              CGPoint(x: middle, y: topHeight / 2 + spacing),
+                              CGPoint(x: middle + topWidth, y: topHeight - spacing),
+                              CGPoint(x: middle, y: spacing)
+                          ])
+
+                          path.move(to: CGPoint(x: middle, y: topHeight / 2 + spacing * 3))
+                          path.addLines([
+                              CGPoint(x: middle - topWidth, y: topHeight + spacing),
+                              CGPoint(x: spacing, y: height - spacing),
+                              CGPoint(x: width - spacing, y: height - spacing),
+                              CGPoint(x: middle + topWidth, y: topHeight + spacing),
+                              CGPoint(x: middle, y: topHeight / 2 + spacing * 3)
+
+                          ])
+                      }
+                      .fill(Self.symbolColor)
+
+                  }
+              }
+          }
+
+          struct BadgeSymbol_Previews: PreviewProvider {
+              static var previews: some View {
+                  BadgeSymbol()
+              }
+          }
+        ```
+
+   5. Create a new RotatedBadgeSymbol view to encapsulate the concept of a rotated symbol.
+
+      1. Adjust the angle in the preview to test the effect of the rotation.
+
+      - ```swift
+          import SwiftUI
+
+          struct RotatedBadgeSymbol: View {
+              let angle: Angle
+
+              var body: some View {
+                  BadgeSymbol()
+                      .padding(100)
+                      .rotationEffect(angle, anchor: .bottom)
+              }
+          }
+
+          struct RotatedBadgeSymbol_Previews: PreviewProvider {
+              static var previews: some View {
+                  RotatedBadgeSymbol(angle: Angle(degrees: 25))
+              }
+          }
+        ```
+
+      - <img src="./resources/images/draw_badge_symbol.png" alt="Draw Badge Symbol" width="200"/>
