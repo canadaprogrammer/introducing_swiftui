@@ -31,6 +31,7 @@
       - [Draw the Badge Background](#draw-the-badge-background)
       - [Draw the Badge Symbol](#draw-the-badge-symbol)
       - [Combine the Badge Foreground and Background](#combine-the-badge-foreground-and-background)
+    - [Animating Views and Transitions](#animating-views-and-transitions)
 
 ## SwiftUI Essentials
 
@@ -923,7 +924,7 @@
 ### Handling User Input
 
 - In the Landmarks app, a user can flag their favorite places, and filter the list to show just their favorites.
-- To create this feature, you'll start by adding a switch to the list so users cna focus on just their favorites,
+- To create this feature, you'll start by adding a switch to the list so users can focus on just their favorites,
 - and then you'll add a star-shaped button that a user taps to flag a landmark as a favorite.
 
 #### Mark the User's Favorite Landmarks
@@ -959,17 +960,21 @@
 2. Add a `@State` property called showFavoritesOnly with its initial value set to `false`, `@State private var showFavoritesOnly = false`
    1. Because you use the state properties to hold information that's specific a view and its subviews, you always create state as private.
 3. Compute a filtered version of the landmarks list by checking the showFavoritesOnly property and each landmark.isFavorite value.
-4. Use the filtered version of the list of landmarks in the List.
 
    - ```swift
-      ...
       struct LandmarkList: View {
-          @State private var showFavoritesOnly = true
+          ...
           var filteredLandmarks: [Landmark] {
-              landmark.filter { landmark in
+              landmarks.filter { landmark in
                   (!showFavoritesOnly || landmark.isFavorite)
               }
           }
+          ...
+     ```
+
+4. Use the filtered version of the list of landmarks in the List.
+
+   - ```swift
           var body: some View {
               NavigationView {
                   List(filteredLandmarks) { landmark in
@@ -990,7 +995,7 @@
 1. Create a nested `ForEach` group to transform the landmarks into rows.
    1. **To combine static and dynamic views in a list**, or **to combine two or more different groups of dynamic views**, **use the `ForEach` type** instead of passing your collection of data to List.
 2. Add a `Toggle` view as the first child of the List view, passing a binding to `showFavoritesOnly`.
-   1. You use the $ prefix to access a binding to a state variable, or one of its properties.
+   1. You use the `$` prefix to access a binding to a state variable, or one of its properties.
 3. Before moving on, return the default value of `showFavoritesOnly` to `false`.
 
    - ```swift
@@ -1033,7 +1038,7 @@
 - SwiftUI watches for any changes to observable objects that could affect a view, and displays the correct version of the view after a change.
 
 1. In the project's navigation pane, select ModelData.swift.
-2. Declare a new model type that conforms to the ObservableObject protocol from the Combine framework.
+2. Declare a new model type that conforms to the ObservableObject protocol, `final class ModelData: ObservableObject` from the `Combine` framework.
    1. SwiftUI subscribes to your observable object, and updates any views that need refreshing when the data changes.
 3. Move the landmarks array into the model.
 4. An observable object needs to publish any changes to its data, so that its subscribers can pick up the changes.
@@ -1065,7 +1070,7 @@
           @State private var showFavoritesOnly = false
 
           var filteredLandmarks: [Landmark] {
-              modelData.landmark.filter { landmark in
+              modelData.landmarks.filter { landmark in
               ...
       struct LandmarkList_Previews: PreviewProvider {
           static var previews: some View {
@@ -1078,7 +1083,7 @@
 
    - ```swift
       static var previews: some View {
-          LandmarkDetail(landmark: ModelData().landmark[0])
+          LandmarkDetail(landmark: ModelData().landmarks[0])
       }
      ```
 
@@ -1086,7 +1091,8 @@
 
    - ```swift
       struct LandmarkRow_Previews: PreviewProvider {
-          static var landmark = ModelData().landmark
+          static var landmarks = ModelData().landmarks
+          ...
      ```
 
 5. Update the `ContentView` preview to add the model object to the environment, which makes the object available to any subview.
@@ -1102,7 +1108,7 @@
 
    1. Update the `LandmarksApp` to create a model instance and supply it to ContentView using the environmentObject(\_:) modifier.
 
-      1. Use the @StateObject attribute to initialize a model object for a given property only once during the life time of the app.
+      1. Use the `@StateObject` attribute to initialize a model object for a given property only once during the life time of the app.
       2. This is true when you use the attribute in an app instance, as shown here, as well as you use it in a view.
 
       - ```swift
@@ -1160,9 +1166,10 @@
 
 3. Add the FavoriteButton to the detail view, binding the button's isSet property to the isFavorite property of a given landmark.
 
-   1. Switch to LandmarkDetail.swift, and compute the index of the input landmark by comparing it with the model data.
+   1. Switch to `LandmarkDetail.swift`, and compute the index of the input landmark by comparing it with the model data.
       1. To support this, you also need access to the environment's model data.
-   2. Embed the landmark's name in an HStack with a new FavoriteButton; provide a binding to the isFavorite property with the collar sign ($).
+      2. Force-unwrap using '!' to abort execution if the optional value contains 'nil'.
+   2. Embed the landmark's name in an `HStack` with a new `FavoriteButton`; provide a binding to the isFavorite property with the dollar sign ($).
 
       1. Use landmarkIndex with the modelData object to ensure that the button updates the isFavorite property of the landmark stored in your model object.
 
@@ -1174,16 +1181,23 @@
               var landmark: Landmark
 
               var landmarkIndex: Int {
-                  modelData.landmark.firstIndex(where: {$0.id == landmark.id})!
+                  modelData.landmarks.firstIndex(where: {$0.id == landmark.id})!
               }
               ...
                       VStack(alignment: .leading) {
                           HStack {
                               Text(landmark.name)
                                   .font(.title)
-                              FavoriteButton(isSet: $modelData.landmark[landmarkIndex].isFavorite)
+                              FavoriteButton(isSet: $modelData.landmarks[landmarkIndex].isFavorite)
                           }
                           ...
+          struct LandmarkDetail_Previews: PreviewProvider {
+              static let modelData = ModelData()
+              static var preview: some View {
+                  LandmarkDetail(landmark: modelData.landmarks[0])
+                      .environmentObject(modelData)
+              }
+          }
         ```
 
    3. Switch back to LandmarkList.swift, and turn on the live preview.
@@ -1569,3 +1583,7 @@
 6. To keep the project organized, collect badge vies into a Badges group.
 
    - <img src="./resources/images/badge_views.png" alt="Badge Views" width="200"/>
+
+### Animating Views and Transitions
+
+- [Project files](https://docs-assets.developer.apple.com/published/406233a99cd89616618a8e811d549348/AnimatingViewsAndTransitions.zip)
