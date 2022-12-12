@@ -33,6 +33,7 @@
       - [Combine the Badge Foreground and Background](#combine-the-badge-foreground-and-background)
     - [Animating Views and Transitions](#animating-views-and-transitions)
       - [Add Hiking Data to the App](#add-hiking-data-to-the-app)
+      - [Add Animations to Individual Views](#add-animations-to-individual-views)
 
 ## SwiftUI Essentials
 
@@ -1206,8 +1207,7 @@
       1. As you navigate from the list to the detail and tap the button, those changes presis when you return to the list.
       2. Because both views access the same model object in the environment, the two views maintain consistency.
 
-
-      - <video src="https://user-images.githubusercontent.com/25374253/206947980-6b8bee85-08d3-4b44-a388-b5615e0d3440.mp4" controls="controls" style="max-width: 400px;"></video> 
+      - <video src="https://user-images.githubusercontent.com/25374253/206947980-6b8bee85-08d3-4b44-a388-b5615e0d3440.mp4" controls="controls" style="max-width: 400px;"></video>
 
 ## Drawing and Animation
 
@@ -1646,8 +1646,50 @@
 
    1. In `HikeView.swift`, experiment with showing and hiding the graph.
 
-   - <video src="https://user-images.githubusercontent.com/25374253/206953786-bb3dd7f5-f76d-4461-9ce1-2ad1eab452cd.mp4" controls="controls" style="max-width: 400px;"></video> 
+   - <video src="https://user-images.githubusercontent.com/25374253/206953786-bb3dd7f5-f76d-4461-9ce1-2ad1eab452cd.mp4" controls="controls" style="max-width: 400px;"></video>
 
+#### Add Animations to Individual Views
 
+- <img src="./resources/images/add_animation.png" alt="Add Animations" width="400"/>
+- When you use the `animation(_:)` modifier on an equatable view, SwiftUI animates any changes to animatable properties of the view.
+- A view's color, opacity, rotation, size, and other properties are all animatable.
+- When the view isn't equatable, you can use the `animation(_:value:)` modifier to start animations when the specified value changes.
 
+1. In HikeView.swift, turn on animation for the button's rotation by adding an animation modifier that begins on changes of the showDetail view.
+   1. `.animation(.easeInOut, value: showDetail)`
+2. Add another animatable change by making the button larger when the graph is visible.
+   1. The animation modifier applies to all animatable changes within the views it wraps.
+      1. `.scaleEffect(showDetail ? 1.5 : 1)`
+3. Change the animation type from easeInOut to spring().
+   1. SwiftUI includes basic animations with predefined or custom easing, as well as spring and fluid animations.
+   2. You can adjust an animation's speed, set a delay before an animation starts, or specify that an animation repeats.
+      1. `.animation(.spring(), value: showDetail)`
+4. Try turning off animation for the rotation by adding another animation modifier just above the scaleEffect modifier.
 
+   1. `.animation(nil, value: showDetail)`
+   2. Take SwiftUI for a spin. Try combining different animation effects to see what's possible.
+      1. basic: `.linear()`, `easeOut()`, `easeIn()`, `.easeInOut()`
+         1. `.animation(.easeInOut(duration: 1).delay(1), value: showDetail)`
+         2. `.animation(.easeInOut(duration: 2).repeatCount(3, autoreverses: true), value: showDetail)`
+         3. .`animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: showDetail)`
+      2. `.spring()`
+      3. `.interpolatingSpring(mass: 1, stiffness: 1, damping: 0.5, initialVelocity: 10)`
+         1. mass: The mass of the object attached to the spring.
+         2. initialVelocity: The initial velocity of the spring, as a value in the range [0,1] representing the magnitude of the value being animated.
+
+   - ```swift
+      Button {
+          showDetail.toggle()
+      } label: {
+          Label("Graph", systemImage: "chevron.right.circle")
+              .labelStyle(.iconOnly)
+              .imageScale(.large)
+              .rotationEffect(.degrees(showDetail ? 90 : 0))
+              .animation(nil, value: showDetail)
+              .scaleEffect(showDetail ? 1.5 : 1)
+              .padding()
+              .animation(.easeInOut(duration: 1).delay(0.3), value: showDetail)
+      }
+     ```
+
+5. Remote both animation modifiers before moving on to the next section.
