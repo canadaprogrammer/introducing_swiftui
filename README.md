@@ -1646,4 +1646,8 @@
 
    1. In `HikeView.swift`, experiment with showing and hiding the graph.
 
-   - <video src='./resources/videos/hike_view.mp4' width=180></video>
+   - <video src="https://user-images.githubusercontent.com/25374253/206953786-bb3dd7f5-f76d-4461-9ce1-2ad1eab452cd.mp4" controls="controls" style="max-width: 400px;"></video> 
+
+
+
+
