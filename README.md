@@ -32,6 +32,7 @@
       - [Draw the Badge Symbol](#draw-the-badge-symbol)
       - [Combine the Badge Foreground and Background](#combine-the-badge-foreground-and-background)
     - [Animating Views and Transitions](#animating-views-and-transitions)
+      - [Add Hiking Data to the App](#add-hiking-data-to-the-app)
 
 ## SwiftUI Essentials
 
@@ -1439,9 +1440,9 @@
 
    1. Create a new custom view called BadgeSymbol for the mountain shape that's stamped in a rotated pattern in the badge design.
    2. Draw the top portion of the symbol using the path APIs.
-      1. Adjust the numberic mulitpliers associated with the spacing, topWidth, and topHeight constants to see how they influence the overall shape.
+      1. Adjust the numeric multipliers associated with the spacing, topWidth, and topHeight constants to see how they influence the overall shape.
    3. Draw the bottom portion of the symbol.
-      1. Use the move(to:) modifier to insert a gap between multiple shapes in the smae path.
+      1. Use the move(to:) modifier to insert a gap between multiple shapes in the same path.
    4. Fill the symbol with the purple color from the design.
 
       - ```swift
@@ -1585,4 +1586,64 @@
 
 ### Animating Views and Transitions
 
+- Using the `animation(_:)` modifier, you'll animate a view that contains a graph for tracking the hikes a user takes while using the Landmarks app.
 - [Project files](https://docs-assets.developer.apple.com/published/406233a99cd89616618a8e811d549348/AnimatingViewsAndTransitions.zip)
+
+#### Add Hiking Data to the App
+
+- You'll import and model hiking data, and then add some prebuilt views for displaying that data statically in a graph.
+
+1. Drag the `hikeData.json` file from Project files' Resources folder into your project's Resources group.
+   1. Be sure to select "Copy items if needed" before clicking Finish.
+2. Create a new Swift file called Hike.swift in your project's Model group.
+
+   1. Like the Landmark structure, the Hike structure conforms to Codable and has properties that match the keys in the corresponding data file.
+   2. Declare `distanceText` to format distances with the unit.
+
+   - ```swift
+      import Foundation
+
+      struct Hike: Hashable, Codable {
+          var id: Int
+          var name: String
+          var distance: Double
+          var difficulty: Int
+          var observations: [Observation]
+
+          struct Observation: Hashable, Codable {
+              var elevation: Range<Double>
+              var pace: Range<Double>
+              var heartRate: Range<Double>
+              var distanceFromStart: Double
+          }
+
+          static var formatter = LengthFormatter()
+
+          var distanceText: String {
+              Hike.formatter.string(fromValue: distance, unit: .kilometer)
+          }
+      }
+     ```
+
+3. Load the hikes array into your model object, `ModelData.swift`.
+
+   1. Because you'll never modify hike data after initially loading it, you don't need to mark it with the `@Published` attribute.
+
+   - ```swift
+      final class ModelData: ObservableObject {
+          @Published var landmarks: [Landmark] = load("landmarkData.json")
+          var hikes: [Hike] = load("hikeData.json")
+      }
+     ```
+
+4. Drag the Hikes folder from the project files' Resources folder into your project's Views group.
+
+   1. Be sure to select "Create groups" before clicking Finish.
+
+   - <img src="./resources/images/hikes_folder.png" alt="Hikes Folder" width="400"/>
+
+5. Familiarize yourself with the new views. They work together to display the hike data loaded into your model.
+
+   1. In `HikeView.swift`, experiment with showing and hiding the graph.
+
+   - <video src='./resources/videos/hike_view.mp4' width=180></video>

@@ -2,4 +2,7 @@ BuildingListsAndNavigation/
 Landmarks/
 LandmarksPractice/
 DrawingPathsAndShapes/
+AnimatingViewsAndTransitions/
+
 .DS_Store
+.vscode
