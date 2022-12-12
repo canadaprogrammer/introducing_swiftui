@@ -1205,9 +1205,8 @@
       1. As you navigate from the list to the detail and tap the button, those changes presis when you return to the list.
       2. Because both views access the same model object in the environment, the two views maintain consistency.
 
-      - <video width="250" height="514" controls>
-           <source src="./resources/videos/favorite_button.mp4" type="video/mp4">
-        </video>
+
+      - <video src="https://user-images.githubusercontent.com/25374253/206947980-6b8bee85-08d3-4b44-a388-b5615e0d3440.mp4" controls="controls" style="max-width: 400px;"></video> 
 
 ## Drawing and Animation
 
