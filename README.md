@@ -34,6 +34,7 @@
     - [Animating Views and Transitions](#animating-views-and-transitions)
       - [Add Hiking Data to the App](#add-hiking-data-to-the-app)
       - [Add Animations to Individual Views](#add-animations-to-individual-views)
+      - [Animate the Effects of State Changes](#animate-the-effects-of-state-changes)
 
 ## SwiftUI Essentials
 
@@ -1693,3 +1694,26 @@
      ```
 
 5. Remote both animation modifiers before moving on to the next section.
+
+#### Animate the Effects of State Changes
+
+- You'll apply animations to all of the changes that occur when a user taps a button and toggles the showDetail state property.
+
+1. Wrap the call to showDetail.toggle() with a call to the withAnimation function.
+   1. Both of the views affected by the showDetail property - the disclosure button and the HikeDetail view - now have animated transitions.
+2. Slow down the animation to see how SwiftUI animations are interruptible.
+
+   1. Pass a four-second long basic animation to the `withAnimation` function.
+      1. You can pass the same kinds of animations to the `withAnimation` function that you passed to the `animation(_:value:)` modifier.
+   2. Experiment with opening and closing the graph view mid-animation.
+
+   - ```swift
+      ...
+      Button {
+          withAnimation(.easeInOut(duration: 4)) {
+              showDetail.toggle()
+          }
+          ...
+     ```
+
+3. Before continuing to the next section, restore the withAnimation function to use the default animation by removing the call's input parameter.
