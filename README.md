@@ -35,6 +35,7 @@
       - [Add Hiking Data to the App](#add-hiking-data-to-the-app)
       - [Add Animations to Individual Views](#add-animations-to-individual-views)
       - [Animate the Effects of State Changes](#animate-the-effects-of-state-changes)
+      - [Customize View Transitions](#customize-view-transitions)
 
 ## SwiftUI Essentials
 
@@ -1717,3 +1718,46 @@
      ```
 
 3. Before continuing to the next section, restore the withAnimation function to use the default animation by removing the call's input parameter.
+
+#### Customize View Transitions
+
+- By default, vuews transition on- and offscreen by fading in and out.
+- You can customize this transition by using the `transition(_:)` modifier.
+
+1. Add a `transition(_:)` modifier to the conditionally visible HikeView.
+   1. `if showDetail { HikeDetail(hike: hike).transition(.slide)}`
+   2. Now the graph appears and disappears by sliding in and out of sight.
+2. Extract the transition that you just added as a static property of AnyTransition, and access the new property in the view's transition modifier.
+
+   1. This keeps your code clean as you expand the custom transition.
+
+   - ```swift
+      import SwiftUI
+
+      extension AnyTransition {
+          static var moveAndFade: AnyTransition {
+              AnyTransition.slide
+          }
+      }
+      ...
+                  if showDetail {
+                      HikeDetail(hike: hike)
+                          .transition(.moveAndFade)
+                  }
+      ...
+     ```
+
+3. Switch to using the `move(edge:)` transition, so that the graph slides in and out from the same side.
+   - `AnyTransition.move(edge: .trailing)`
+4. Use the `asymmetric(insertion:removal:)` modifier to provide different transitions for when the view appears and disappears.
+
+   - ```swift
+      ...
+      static var moveAndFade: AnyTransition {
+          .asymmetric(
+              insertion: .move(edge: .trailing).combined(with: .opacity),
+              removal: .scale.combined(with: .opacity)
+          )
+      }
+      ...
+     ```
