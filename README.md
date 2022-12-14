@@ -1820,3 +1820,5 @@
 
 6. Observe how the custom animation provides a rippling effect when transitioning between graphs.
    1. Be sure to unpin the preview before moving on to the next tutorial.
+
+- <video src="https://user-images.githubusercontent.com/25374253/207478453-f1a92088-42b8-4a66-863a-f6c8851519c1.mp4" controls="controls" style="max-width: 400px;"></video> 
