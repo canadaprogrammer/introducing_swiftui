@@ -36,6 +36,7 @@
       - [Add Animations to Individual Views](#add-animations-to-individual-views)
       - [Animate the Effects of State Changes](#animate-the-effects-of-state-changes)
       - [Customize View Transitions](#customize-view-transitions)
+      - [Compose Animations for Complex Effects](#compose-animations-for-complex-effects)
 
 ## SwiftUI Essentials
 
@@ -1764,3 +1765,58 @@
 
 - <video src="https://user-images.githubusercontent.com/25374253/207471507-233d81d7-c9e2-47f0-be64-f75798c8dfbe.mp4" controls="controls" style="max-width: 400px;"></video>
 
+#### Compose Animations for Complex Effects
+
+- The graph switches between three different sets of data when you click the buttons below the bars.
+- You'll use a composed animation to give the capsules that make up the graph a dynamic, rippling transition.
+
+1. In `HikeView`, change the default value for `showDetail` to `true`, and pin the preview to the canvas.
+   1. `@State private var showDetail = true`
+   2. This makes it possible for you to see the graph in context while you work on the animation in another file.
+   - <img src="./resources/images/pin_to_canvas.png" alt="Add Animations" width="200"/>
+2. In `HikeGraph.swift`, define a new ripple animation and apply it to each generated graph capsule.
+
+   - ```swift
+      import SwiftUI
+
+      extension Animation {
+          static func ripple() -> Animation {
+              Animation.default
+          }
+      }
+      ...
+                          GraphCapsule(
+                              ...
+                          )
+                          .animation(.ripple())
+                          ...
+     ```
+
+3. Switch the animation to a spring animation, with a reduced damping fraction to make the bars hop.
+4. Speed up the animation a bit, to shorten the time each bar takes to move to its new position.
+
+   - ```swift
+      static func ripple() -> Animation {
+          Animation.default
+      }
+     ```
+
+5. Add a delay to each animation that's based on the capsule's position on the graph.
+
+   - ```swift
+      ...
+          static func ripple(index: Int) -> Animation {
+              Animation.spring(dampingFraction: 0.5)
+                  .speed(2)
+                  .delay(0.03 * Double(index))
+          }
+      ...
+                          GraphCapsule(
+                              ...
+                          )
+                          .animation(.ripple(index: index))
+                          ...
+     ```
+
+6. Observe how the custom animation provides a rippling effect when transitioning between graphs.
+   1. Be sure to unpin the preview before moving on to the next tutorial.
