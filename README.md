@@ -1228,20 +1228,21 @@
 1. With the Views group selected in the navigation pane, choose File > New > File, select Swift File from the iOS Templates sheet, and click next.
 2. Name the new file HexagonParameters.swift.
    1. You'll use this structure to define the shape of a hexagon.
-3. Inside the new file, create a structure called HexagonParameters.
-4. Define a Segment structure to hold the three points that represent one side of the hexagon; import CoreGraphics so you can use CPPoint.
-   1. Each side starts where the previous ends,
-   2. moves in a straight line to the first point,
-   3. and then moves over the Bezier curve at the corner to the second point.
-   4. The third point controls the shape of the curve.
-5. Create an array to hold segments.
-6. Add data for the six segments, one for each side of the hexagon.
-   1. The values are stored as a fraction of a unit square having its origin in the upper left, with positive x to the right and positive y down.
-   2. Later, you'll use these fractions to find the acctual points of a hexagon with a given size.
-7. Add an adjustment value that lets you tune the shape of the hexagon.
+3. Inside the new file, create a structure called `HexagonParameters`.
+
+   1. Define a `Segment` structure to hold the three points, `line`, `curve`, and `control`, that represent one side of the hexagon; import `CoreGraphics` so you can use `CGPoint`.
+      1. Each side starts where the previous ends,
+      2. moves in a straight line to the first point,
+      3. and then moves over the Bezier curve at the corner to the second point.
+      4. The third point controls the shape of the curve.
+   2. Create an array to hold `segments`.
+   3. Add data for the six segments, one for each side of the hexagon.
+      1. The values are stored as a fraction of a unit square having its origin in the upper left, with positive x to the right and positive y down.
+      2. Later, you'll use these fractions to find the actual points of a hexagon with a given size.
+   4. Add an adjustment value that lets you tune the shape of the hexagon.
 
    - ```swift
-      import Foundation
+      import CoreGraphics
 
       struct HexagonParameters {
           struct Segment {
@@ -1297,7 +1298,7 @@
    1. You use paths to combine lines, curves, and other drawing primitives to form more complex shapes like the badge's hexagonal background.
 3. Add a starting point to the path, assuming a container with size 100 x 100 px.
    1. The `move(to:)` method moves the drawing cursor within the bounds of a shape as though an imaginary pen or pencil is hovering over the area, waiting to start drawing.
-4. Draw the lines for each point of the shape dta to create a rough hexagonal shape.
+4. Draw the lines for each point of the shape data to create a rough hexagonal shape.
 
    1. The `addLine(to:)` method takes a single point and draws it.
    2. Successive calls to `addLine(to:)` begin a line at the previous point and continue to the new point.
@@ -1413,18 +1414,19 @@
     1. By preserving a 1:1 aspect ratio, the badge maintains its position at the center of the view, even if its ancestor views aren't square.
 
        - ```swift
-           ...
-                   .fill(.linearGradient(
-                       Gradient(colors: [Self.gradientStart, Self.gradientEnd]),
-                       startPoint: UnitPoint(x: 0.5, y: 0),
-                       endPoint: UnitPoint(x: 0.5, y: 0.6)
-                   ))
-               }
-               .aspectRatio(1, contentMode: .fit)
-           }
-           static let gradientStart = Color(red: 239.0 / 255, green: 120.0 / 255, blue: 221.0 / 255)
-           static let gradientEnd = Color(red: 239.0 / 255, green: 172.0 / 255, blue: 120.0 / 255)
-           ...
+          ...
+                      .fill(.linearGradient(
+                          Gradient(colors: [Self.gradientStart, Self.gradientEnd]),
+                          startPoint: UnitPoint(x: 0.5, y: 0),
+                          endPoint: UnitPoint(x: 0.5, y: 0.6)
+                      ))
+                  }
+                  .aspectRatio(1, contentMode: .fit)
+              }
+              static let gradientStart = Color(red: 239.0 / 255, green: 120.0 / 255, blue: 221.0 / 255)
+              static let gradientEnd = Color(red: 239.0 / 255, green: 172.0 / 255, blue: 120.0 / 255)
+          }
+          ...
          ```
 
        - <img src="./resources/images/badge_background.png" alt="Badge Background" width="50"/>
@@ -1438,12 +1440,12 @@
 
 1. First you'll give your app an icon, to establish a look for the badge.
    1. Delete the empty AppIcon item from your project's Asset Catalog, and then drag the AppIcon.appiconset folder form the downloaded projects' Resources folder into the Asset catalog.
-      1. Xcode recognizes the folder as containing al the size variations of an app icon and creates a corresponding item in the catalog.
+      1. Xcode recognizes the folder as containing all the size variations of an app icon and creates a corresponding item in the catalog.
 2. Next, you'll build the matching badge symbol.
 
-   1. Create a new custom view called BadgeSymbol for the mountain shape that's stamped in a rotated pattern in the badge design.
-   2. Draw the top portion of the symbol using the path APIs.
-      1. Adjust the numeric multipliers associated with the spacing, topWidth, and topHeight constants to see how they influence the overall shape.
+   1. Create a new custom `SwiftUI` view called `BadgeSymbol` for the mountain shape that's stamped in a rotated pattern in the badge design.
+   2. Draw the top portion of the symbol using the `path` APIs in `GeometryReader`.
+      1. Adjust the numeric multipliers associated with the `spacing`, `topWidth`, and `topHeight` constants to see how they influence the overall shape.
    3. Draw the bottom portion of the symbol.
       1. Use the move(to:) modifier to insert a gap between multiple shapes in the same path.
    4. Fill the symbol with the purple color from the design.
@@ -1495,7 +1497,7 @@
           }
         ```
 
-   5. Create a new RotatedBadgeSymbol view to encapsulate the concept of a rotated symbol.
+   5. Create a new `RotatedBadgeSymbol` SwiftUI view to encapsulate the concept of a rotated symbol.
 
       1. Adjust the angle in the preview to test the effect of the rotation.
 
@@ -1563,6 +1565,7 @@
 5. Add a ForEach view to rotate and display copies of the badge symbol.
 
    1. A full, 360° rotation split into eight segments creates a sun-like pattern by repeating the mountain symbol.
+   2. To scale the view to fit its parent, use `scaledToFit()` modifier to `ZStack`.
 
    - ```swift
       var badgeSymbols: some View {
@@ -1820,5 +1823,3 @@
 
 6. Observe how the custom animation provides a rippling effect when transitioning between graphs.
    1. Be sure to unpin the preview before moving on to the next tutorial.
-
-- <video src="https://user-images.githubusercontent.com/25374253/207478453-f1a92088-42b8-4a66-863a-f6c8851519c1.mp4" controls="controls" style="max-width: 400px;"></video> 
