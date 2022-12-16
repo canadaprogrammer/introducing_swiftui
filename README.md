@@ -1604,7 +1604,7 @@
 2. Create a new Swift file called Hike.swift in your project's Model group.
 
    1. Like the Landmark structure, the Hike structure conforms to Codable and has properties that match the keys in the corresponding data file.
-   2. Declare `distanceText` to format distances with the unit.
+   2. Declare `distanceText` to format distances with the unit by using `LengthFormatter`.
 
    - ```swift
       import Foundation
@@ -1725,7 +1725,7 @@
 
 #### Customize View Transitions
 
-- By default, vuews transition on- and offscreen by fading in and out.
+- By default, views transition on- and offscreen by fading in and out.
 - You can customize this transition by using the `transition(_:)` modifier.
 
 1. Add a `transition(_:)` modifier to the conditionally visible HikeView.
@@ -1744,6 +1744,8 @@
           }
       }
       ...
+              VStack {
+                  ...
                   if showDetail {
                       HikeDetail(hike: hike)
                           .transition(.moveAndFade)
@@ -1773,7 +1775,7 @@
 - The graph switches between three different sets of data when you click the buttons below the bars.
 - You'll use a composed animation to give the capsules that make up the graph a dynamic, rippling transition.
 
-1. In `HikeView`, change the default value for `showDetail` to `true`, and pin the preview to the canvas.
+1. In `HikeView`, change the default value for `showDetail` to `true`, and `pin` the preview to the canvas.
    1. `@State private var showDetail = true`
    2. This makes it possible for you to see the graph in context while you work on the animation in another file.
    - <img src="./resources/images/pin_to_canvas.png" alt="Add Animations" width="200"/>
@@ -1788,6 +1790,7 @@
           }
       }
       ...
+                      ForEach(Array(data.enumerated()), id: \.offset) { index, observation in
                           GraphCapsule(
                               ...
                           )
@@ -1797,13 +1800,6 @@
 
 3. Switch the animation to a spring animation, with a reduced damping fraction to make the bars hop.
 4. Speed up the animation a bit, to shorten the time each bar takes to move to its new position.
-
-   - ```swift
-      static func ripple() -> Animation {
-          Animation.default
-      }
-     ```
-
 5. Add a delay to each animation that's based on the capsule's position on the graph.
 
    - ```swift
@@ -1814,6 +1810,7 @@
                   .delay(0.03 * Double(index))
           }
       ...
+                      ForEach(Array(data.enumerated()), id: \.offset) { index, observation in
                           GraphCapsule(
                               ...
                           )
