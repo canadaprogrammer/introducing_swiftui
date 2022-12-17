@@ -40,6 +40,7 @@
   - [App Design and Layout](#app-design-and-layout)
     - [Composing Complex Interfaces](#composing-complex-interfaces)
       - [Add a Category View](#add-a-category-view)
+      - [Create a Category List](#create-a-category-list)
 
 ## SwiftUI Essentials
 
@@ -1863,3 +1864,71 @@
           }
       }
      ```
+
+#### Create a Category List
+
+- The category view displays all categories in separate rows arranged in a vertical column for easier browsing.
+- You do this by combining vertical and horizontal stacks, and adding scrolling to the list.
+- Start by reading category data from the landmarkData.json file.
+
+1. In `Landmark.swift`, add a Category enumeration and a category property to the Landmark structure.
+
+   1. The landmarkData.json file already includes a category value for each landmark with one of three string values.
+   2. By matching the names in the data file, you can rely on the structure's Codable conformance to load the data.
+
+   - ```swift
+      ...
+          var category: Category
+          enum Category: String, CaseIterable, Codable {
+              case lakes = "Lakes"
+              case rivers = "Rivers"
+              case mountains = "Mountains"
+          }
+          ...
+     ```
+
+2. In `ModelData.swift`, add a computed categories dictionary, with category names as keys, and an array of associated landmarks for each key.
+
+   - ```swift
+      ...
+          var categories: [String: [Landmark]] {
+              Dictionary(
+                  grouping: landmarks,
+                  by: { $0.category.rawValue }
+              )
+          }
+      ...
+     ```
+
+3. In CategoryHome.swift, create a modelData environment object.
+
+   1. You'll need access to the categories right now, as well as to other landmark data later.
+   2. Display the categories in Landmarks using a List.
+      1. The Landmark.Category case name identifies each item in the list, which must be unique among other categories because it's an enumeration.
+
+   - ```swift
+      import SwiftUI
+
+      struct CategoryHome: View {
+          @EnvironmentObject var modelData: ModelData
+          var body: some View {
+              NavigationView {
+                  List {
+                      ForEach(modelData.categories.keys.sorted(), id: \.self) { key in
+                          Text(key)
+                      }
+                  }
+                  .navigationTitle("Featured")
+              }
+          }
+      }
+
+      struct CategoryHome_Previews: PreviewProvider {
+          static var previews: some View {
+              CategoryHome()
+                  .environmentObject(ModelData())
+          }
+      }
+     ```
+
+- <img src="./resources/images/category_list.png" alt="Category List" width="200"/>
