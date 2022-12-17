@@ -37,6 +37,9 @@
       - [Animate the Effects of State Changes](#animate-the-effects-of-state-changes)
       - [Customize View Transitions](#customize-view-transitions)
       - [Compose Animations for Complex Effects](#compose-animations-for-complex-effects)
+  - [App Design and Layout](#app-design-and-layout)
+    - [Composing Complex Interfaces](#composing-complex-interfaces)
+      - [Add a Category View](#add-a-category-view)
 
 ## SwiftUI Essentials
 
@@ -1820,3 +1823,43 @@
 
 6. Observe how the custom animation provides a rippling effect when transitioning between graphs.
    1. Be sure to unpin the preview before moving on to the next tutorial.
+
+## App Design and Layout
+
+### Composing Complex Interfaces
+
+- The category view for Landmarks shows a vertically scrolling list of horizontally scrolling landmarks.
+- Ad you build this view and connect it to your existing views, you'll explore how composed views can adapt to different device sizes and orientations.
+- [Project files](https://docs-assets.developer.apple.com/published/bd503d60b3bb9fa72a799637a1ecb6a2/ComposingComplexInterfaces.zip)
+
+#### Add a Category View
+
+- You can provide a different way to browse the landmarks by creating a view that sort landmarks by category,
+- while highlighting a featured landmark at the top of the view.
+- <img src="./resources/images/category_view.png" alt="Category View" width="200"/>
+
+1. Create a `Categories` group in your project's Views group, and create a custom view called `CategoryHome` to the new group.
+2. Add a `NavigationView` to host the different categories.
+   1. You use navigation views along with NavigationLink instances and related modifiers to build hierarchical navigation structures in your app.
+3. Set the title of the navigation bar to `Featured`.
+
+   1. The view showcases one or more featured landmarks at the top.
+
+   - ```swift
+      import SwiftUI
+
+      struct CategoryHome: View {
+          var body: some View {
+              NavigationView {
+                  Text("Hello, World!")
+                      .navigationTitle("Featured")
+              }
+          }
+      }
+
+      struct CategoryHome_Previews: PreviewProvider {
+          static var previews: some View {
+              CategoryHome()
+          }
+      }
+     ```
