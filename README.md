@@ -41,6 +41,7 @@
     - [Composing Complex Interfaces](#composing-complex-interfaces)
       - [Add a Category View](#add-a-category-view)
       - [Create a Category List](#create-a-category-list)
+      - [Create a Category Row](#create-a-category-row)
 
 ## SwiftUI Essentials
 
@@ -1900,7 +1901,7 @@
       ...
      ```
 
-3. In CategoryHome.swift, create a modelData environment object.
+3. In `CategoryHome.swift`, create a modelData environment object.
 
    1. You'll need access to the categories right now, as well as to other landmark data later.
    2. Display the categories in Landmarks using a List.
@@ -1932,3 +1933,90 @@
      ```
 
 - <img src="./resources/images/category_list.png" alt="Category List" width="200"/>
+
+#### Create a Category Row
+
+- Landmarks displays each category in a row that scrolls horizontally.
+- Add a new view type to represent the row, then display all the landmarks for that category in the new view.
+- <img src="./resources/images/category_row.png" alt="Category Row" width="300"/>
+
+1. Define a new custom SwiftUI view CategoryRow in Categories Group for holding the contents of a row.
+2. Add properties for the category name and the list of items in that category.
+   1. `.prefix(_ maxLength: Int)` returns a subsequence, up to the specified maximum length, containing the initial elements of the collection.
+3. Display the name of the category.
+4. Put the category's items in an `HStack(alignment: .top, spacing: 0)`, and group that with the category name in a `VStack(alignment: .leading)`.
+5. Adding padding to the category name, and wrapping the HStack in a `ScrollView(.horizontal, showsIndicators: false)`, give the content some space by specifying a tall `frame(height: 185)` to the ScrollView.
+
+   - ```swift
+      import SwiftUI
+
+      struct CategoryRow: View {
+          var categoryName: String
+          var items: [Landmark]
+          var body: some View {
+              VStack(alignment: .leading) {
+                  Text(categoryName)
+                      .font(.headline)
+                      .padding(.leading, 15)
+                      .padding(.top, 5)
+                  ScrollView(.horizontal, showsIndicators: false) {
+                      HStack(alignment: .top, spacing: 0) {
+                          ForEach(items) { landmark in
+                              Text(landmark.name)
+                          }
+                      }
+                  }
+                  .frame(height: 185)
+              }
+          }
+      }
+
+      struct CategoryRow_Previews: PreviewProvider {
+          static var landmarks = ModelData().landmarks
+          static var previews: some View {
+              CategoryRow(
+                  categoryName: landmarks[0].category.rawValue,
+                  items: Array(landmarks.prefix(4))
+              )
+          }
+      }
+     ```
+
+6. Create a new custom SwiftUI view called CategoryItem that displays one landmark.
+
+   - ```swift
+      import SwiftUI
+
+      struct CategoryItem: View {
+          var landmark: Landmark
+          var body: some View {
+              VStack(alignment: .leading) {
+                  landmark.image
+                      .resizable()
+                      .frame(width: 155, height: 155)
+                      .cornerRadius(5)
+                  Text(landmark.name)
+                      .font(.caption)
+              }
+              .padding(.leading, 15)
+          }
+      }
+
+      struct CategoryItem_Previews: PreviewProvider {
+          static var previews: some View {
+              CategoryItem(landmark: ModelData().landmarks[0])
+          }
+      }
+     ```
+
+7. In CategoryRow.swift, replace the Text that holds the landmark name with the new CategoryItem view.
+
+   - ```swift
+      ...
+          ForEach(items) { landmark in
+              CategoryItem(landmark: landmark)
+          }
+      ...
+     ```
+
+- <img src="./resources/images/category_row_result.png" alt="Category Row Result" width="300"/>
