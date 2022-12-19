@@ -2025,7 +2025,7 @@
 #### Complete the Category View
 
 - Add the rows and the featured image to the cateogry home page.
-- [category view]()
+- <video src="https://user-images.githubusercontent.com/25374253/208339716-263f45ac-0734-4d25-8abe-f0a4c06605e7.mp4" controls="controls" style="max-width: 400px;"></video>
 
 1. Update the body of `CategoryHome.swift` to pass category information to instance of the row type.
 
