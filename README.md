@@ -42,6 +42,7 @@
       - [Add a Category View](#add-a-category-view)
       - [Create a Category List](#create-a-category-list)
       - [Create a Category Row](#create-a-category-row)
+      - [Complete the Category View](#complete-the-category-view)
 
 ## SwiftUI Essentials
 
@@ -2009,7 +2010,7 @@
       }
      ```
 
-7. In CategoryRow.swift, replace the Text that holds the landmark name with the new CategoryItem view.
+7. In `CategoryRow.swift`, replace the Text that holds the landmark name with the new CategoryItem view.
 
    - ```swift
       ...
@@ -2020,3 +2021,47 @@
      ```
 
 - <img src="./resources/images/category_row_result.png" alt="Category Row Result" width="300"/>
+
+#### Complete the Category View
+
+- Add the rows and the featured image to the cateogry home page.
+- [category view]()
+
+1. Update the body of `CategoryHome.swift` to pass category information to instance of the row type.
+
+   - ```swift
+      ...
+                ForEach(modelData.categories.keys.sorted(), id: \.self) { key in
+                    CategoryRow(categoryName: key, items: modelData.categories[key]!)
+                }
+      ...
+     ```
+
+2. You'll add a featured landmark to the top of the view.
+3. You'll need more information from the landmark data to do this.
+   1. In `Landmark.swift`, add a new isFeatured property.
+      1. Like for other landmark properties you've added, this Boolean already exists in the data - you just need to declare a new property.
+      2. `var isFeatured: Bool`
+   2. In `ModelData.swift`, add a new computed features array, which contains only the landmarks that have isFeatured set to true.
+      1. `var features: [Landmark] { landmarks.filter { $0.isFeatured } }`
+4. In `CategoryHome.swift`, add the image of the first featured landmark to the top of the list.
+
+   1. You'll turn this view into an interactive carousel in a later tutorial.
+   2. For now, it displays one of the featured landmarks with a scaled and cropped preview image.
+
+      - ```swift
+          ...
+              NavigationView {
+                  List {
+                      modelData.features[0].image
+                          .resizable()
+                          .scaledToFill()
+                          .frame(height:200)
+                          .clipped()
+                      ...
+        ```
+
+5. Set the edge insets to zero on both kinds of landmark previews so the content can extend to the edges of the display.
+   1. Add `.listRowInsets(EdgeInsets())` to the featured image and the categories.
+
+- <img src="./resources/images/category_view_full.png" alt="Category View Full" width="200"/>
