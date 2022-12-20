@@ -43,6 +43,7 @@
       - [Create a Category List](#create-a-category-list)
       - [Create a Category Row](#create-a-category-row)
       - [Complete the Category View](#complete-the-category-view)
+      - [Add Navigation Between Sections](#add-navigation-between-sections)
 
 ## SwiftUI Essentials
 
@@ -2065,3 +2066,82 @@
    1. Add `.listRowInsets(EdgeInsets())` to the featured image and the categories.
 
 - <img src="./resources/images/category_view_full.png" alt="Category View Full" width="200"/>
+
+#### Add Navigation Between Sections
+
+- With all of the differently categorized landmarks visible in the view, the user needs a way to reach each section in the app.
+- Use the navigation and presentation APIs to make the category home, the detail view, and favorites list navigable from a tab view.
+
+1. In `CategoryRow.swift`, wrap the existing `CategoryItem` with a `NavigationLink`.
+
+   1. The category item itself is the label for the button, and its destination is the landmark detail view for the landmark represented by the card.
+
+   - ```swift
+      ...
+                    ForEach(items) { landmark in
+                        NavigationLink {
+                            LandmarkDetail(landmark: landmark)
+                        } label: {
+                            CategoryItem(landmark: landmark)
+                        }
+                    }
+                ...
+     ```
+
+2. Pin the preview so you can see the effect of the next step on the CategoryRow.
+3. Change the navigation appearance of the `categoryItem` by applying the `renderingMode(_:)` and `foregroundColor(_:)` modifiers.
+
+   1. Text that you pass as the label for a navigation link renders using the environment's accent color, and images may render as template images.
+   2. You can modify either behavior to best suit your design.
+
+   - ```swift
+      ...
+            landmark.image
+                .renderingMode(.original)
+                ...
+            Text(landmark.name)
+                .foregroundColor(.primary)
+                ...
+     ```
+
+4. Let the user choose between the category view you just created, and the existing list of landmarks.
+
+   1. Unpin the preview, switch to the `ContentView` and add an enumeration of the tabs to display.
+   2. Add a state variable for the tab selection, and give it a default value.
+   3. Create a `TabView` that wraps the `LandmarkList`, as well as the new `CategoryHome`.
+      1. The `tag(_:)` modifier on each of the views matches one of the possible values that the selection property can take
+      2. so the TabView can coordinate which view to display when the user makes a selection in the user interface.
+   4. Give each tab a label with `.tabItem{Label(_ titleKey:, systemImage:)}`.
+
+   - ```swift
+      import SwiftUI
+
+      struct ContentView: View {
+          @State private var selection: Tab = .featured
+          enum Tab {
+              case featured
+              case list
+          }
+          var body: some View {
+              TabView(selection: $selection) {
+                  CategoryHome()
+                      .tabItem{
+                          Label("Featured", systemImage: "star")
+                      }
+                      .tag(Tab.featured)
+                  LandmarkList()
+                      .tabItem {
+                          Label("List", systemImage: "list.bullet")
+                      }
+                      .tag(Tab.list)
+              }
+      //        LandmarkList()
+          }
+      }
+
+      struct ContentView_Previews: PreviewProvider {
+          static var previews: some View {
+              ContentView().environmentObject(ModelData())
+          }
+      }
+     ```
