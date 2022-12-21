@@ -44,6 +44,8 @@
       - [Create a Category Row](#create-a-category-row)
       - [Complete the Category View](#complete-the-category-view)
       - [Add Navigation Between Sections](#add-navigation-between-sections)
+    - [Working with UI Controls](#working-with-ui-controls)
+      - [Display a User Profile](#display-a-user-profile)
 
 ## SwiftUI Essentials
 
@@ -2147,3 +2149,228 @@
      ```
 
 - <video src="https://user-images.githubusercontent.com/25374253/208588333-eda20f13-bd72-4fd2-b08a-202fe6929a23.mp4" controls="controls" style="max-width: 400px;"></video>
+
+### Working with UI Controls
+
+- In the Lanmarks app, users can create a profile to express their personality.
+- To give users the ability to change their profile, you'll add an edit mode and design the preferences screen.
+- You'll work with a cariety of common user interface controls for data entry,
+- and update the Landmarks model types whenever the user saves their changes.
+- [Project files](https://docs-assets.developer.apple.com/published/e277ce6bcbe9025478a3486cfa68746a/WorkingWithUIControls.zip)
+
+#### Display a User Profile
+
+- The Landmarks app locally stores some configuration details and preferences.
+- Before the uer edits their details, they're displayed in a summary view that doesn't have any editing controls.
+
+1. Start by defining a user profile in a new Swift file named `Profile.swift` that you add to your project's Model group.
+
+   - ```swift
+      import Foundation
+
+      struct Profile {
+          var username: String
+          var prefersNotifications = true
+          var seasonlPhoto = Season.winter
+          var goalDate = Date()
+
+          static let `default` = Profile(username: "g_kumar")
+
+          enum Season: String, CaseIterable, Identifiable {
+              case spring = "🌷"
+              case summer = "🌞"
+              case autumn = "🍁"
+              case winter = "☃️"
+
+              var id: String { rawValue }
+          }
+      }
+     ```
+
+2. Create a new group named `Profiles` under the Views group,
+3. and then add a view named `ProfileHost` to that group with a text view that displays the username of a stored profile.
+
+   1. The `ProfileHost` view will host both a static, summary view of profile information and an edit mode.
+
+   - ```swift
+      import SwiftUI
+
+      struct ProfileHost: View {
+          @State private var draftProfile = Profile.default
+          var body: some View {
+              Text("Profile for: \(draftProfile.username)")
+          }
+      }
+
+      struct ProfileHost_Previews: PreviewProvider {
+          static var previews: some View {
+              ProfileHost()
+          }
+      }
+     ```
+
+4. Create another view in the `Profiles` group named `ProfileSummary` that takes a `Profile` instance and displays some basic user information.
+
+   1. The profile summary takes a Profile value rather than a binding to the profile because the parent view, ProfileHost, manages the state for this view.
+
+   - ```swift
+      import SwiftUI
+
+      struct ProfileSummary: View {
+          var profile: Profile
+
+          var body: some View {
+              ScrollView {
+                  VStack(alignment: .leading, spacing: 10) {
+                      Text(profile.username)
+                          .bold()
+                          .font(.title)
+
+                      Text("Notifications: \(profile.prefersNotifications ? "On" : "Off")")
+                      Text("Seasonal Photos: \(profile.seasonlPhoto.rawValue)")
+                      Text("Goal Date: ") + Text(profile.goalDate, style: .date)
+                  }
+              }
+          }
+      }
+
+      struct ProfileSummary_Previews: PreviewProvider {
+          static var previews: some View {
+              ProfileSummary(profile: Profile.default)
+          }
+      }
+     ```
+
+5. Update `ProfileHost` to display the new summary view.
+
+   - ```swift
+      ...
+          var body: some View {
+              VStack(alignment: .leading, spacing: 20) {
+                  ProfileSummary(profile: draftProfile)
+              }
+              .padding()
+          }
+          ...
+     ```
+
+6. Create a new view named `HikeBadge` in the `Hikes` folder that composes the Badge
+7. from Drawing Paths and Shapes along with some descriptive text about the hike.
+
+   1. The badge is just a graphic, so the text in `HikeBadge` along with the `accessibilityLabel(_:)` modifier
+   2. make the meaning of the badge clearer to other users.
+   3. Note:
+      1. The badge's drawing logic produces a result that depends on the size of the frame in which it renders.
+      2. To ensure the desired appearance, render in a **frame of 300 x 300** points.
+      3. To get the desired size for the final graphic, then **scale** the rendered result and place it in a comparably **smaller frame**.
+      4. Declare name variable for the text.
+
+   - ```swift
+      import SwiftUI
+
+      struct HikeBadge: View {
+          var name: String
+          var body: some View {
+              VStack(alignment: .center) {
+                  Badge()
+                      .frame(width: 300, height: 300)
+                      .scaleEffect(1.0 / 3.0)
+                      .frame(width: 100, height: 100)
+                  Text(name)
+                      .font(.caption)
+                      .accessibilityLabel("Badge for \(name).")
+              }
+          }
+      }
+
+      struct HikeBadge_Previews: PreviewProvider {
+          static var previews: some View {
+              HikeBadge(name: "Preview Testing")
+          }
+      }
+     ```
+
+8. Update ProfileSummary to add several badges with varying hues and reasons for earning the badge.
+
+   - ```swift
+      ...
+        var body: some View {
+            ScrollView {
+                ...
+                    Divider()
+
+                    VStack(alignment: .leading) {
+                        Text("Completed Badge")
+                            .font(.headline)
+                        ScrollView(.horizontal) {
+                            HStack {
+                                HikeBadge(name: "First Hike")
+                                HikeBadge(name: "Earth Dau")
+                                    .hueRotation(Angle(degrees: 90))
+                                HikeBadge(name: "Tenth Hike")
+                                    .hueRotation(Angle(degrees: 45))
+                            }
+                            .padding(.bottom)
+                        ...
+     ```
+
+9. Finish off the profile summary by including a HikeView from Animating Views and Transitions.
+
+   1. To use the hike data, you also need to add a model data environment object.
+
+   - ```swift
+      struct ProfileSummary: View {
+          @EnvironmentObject var modelData: ModelData
+          ...
+              ScrollView {
+                  ...
+                      Divider()
+                      VStack(alignment: .leading) {
+                          Text("Recent Hikes")
+                              .font(.headline)
+                          HikeView(hike: modelData.hikes[0])
+                      }
+                  }
+              }
+          }
+      }
+
+
+      struct ProfileSummary_Previews: PreviewProvider {
+          static var previews: some View {
+              ProfileSummary(profile: Profile.default)
+                  .environmentObject(ModelData())
+          }
+      }
+     ```
+
+10. In `CategoryHome.swift`,
+
+    1. add a user profile button to the navigation bar using the `toolbar` modifier,
+    2. and present the `profileHost` view using the `sheet(isPresented:)` modifier when the user taps it.
+    3. Add the `listStyle` modifier to pick a list style that better suits the content.
+
+    - ```swift
+        struct CategoryHome: View {
+            @EnvironmentObject var modelData: ModelData
+            @State private var showingProfile = false
+            var body: some View {
+                NavigationView {
+                    List {
+                        ...
+                    }
+                    .listStyle(.inset)
+                    .navigationTitle("Featured")
+                    .toolbar {
+                        Button {
+                            showingProfile.toggle()
+                        } label: {
+                            Label("User Profile", systemImage: "person.crop.circle")
+                        }
+                    }
+                    .sheet(isPresented: $showingProfile) {
+                        ProfileHost()
+                            .environmentObject(modelData)
+                    }
+                ...
+      ```
