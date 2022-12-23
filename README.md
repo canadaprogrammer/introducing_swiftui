@@ -47,6 +47,7 @@
     - [Working with UI Controls](#working-with-ui-controls)
       - [Display a User Profile](#display-a-user-profile)
       - [Add an Edit Mode](#add-an-edit-mode)
+      - [Define the Profile Editor](#define-the-profile-editor)
 
 ## SwiftUI Essentials
 
@@ -2431,3 +2432,81 @@
           }
       }
      ```
+
+#### Define the Profile Editor
+
+- The user profile editor consists primarily of different controls that change individual details in the profile.
+- For consistency with the profile summary, you'll add the profile details in the same order in the editor.
+
+1. Create a new view named ProfileEditor and include a binding to the draft copy of the user's profile.
+
+   1. The first control in the view is a TextField, which controls and updates a string binding
+      1. in this case, the user's chosen display name.
+   2. You provide a label and a binding to a string when creating a text field.
+
+   - ```swift
+      import SwiftUI
+
+      struct ProfileEditor: View {
+          @Binding var profile: Profile
+          var body: some View {
+              List {
+                  HStack {
+                      Text("Username").bold()
+                      Divider()
+                      TextField("Username:", text: $profile.username)
+                  }
+              }
+          }
+      }
+
+      struct ProfileEditor_Previews: PreviewProvider {
+          static var previews: some View {
+              ProfileEditor(profile: .constant(.default))
+          }
+      }
+     ```
+
+2. Update the conditional content in `ProfileHost` to include the profile editor and pass along the profile binding.
+   1. Now the editor profile view displays when you tap Edit.
+   2. `ProfileEditor(profile: $draftProfile)`
+3. In `ProfileEditor`, add a toggle that corresponds with the user's preference for receiving notifications about landmark-related events.
+   1. Toggles are controls that are either on or off, so they're a good fit for Boolean values like a yes or no preference.
+4. Place a Picker control and its label in a VStack to make the landmark photos have a selectable preferred season.
+5. Finally, add a DatePicker below the season selector to make the landmark visitation goal date modifiable.
+
+   - ```swift
+      import SwiftUI
+
+      struct ProfileEditor: View {
+          @Binding var profile: Profile
+          var dateRange: ClosedRange<Date> {
+              let min = Calendar.current.date(byAdding: .year, value: -1, to: profile.goalDate)!
+              let max = Calendar.current.date(byAdding: .year, value: 1, to: profile.goalDate)!
+              return min...max
+          }
+          var body: some View {
+              List {
+                  ...
+                  Toggle(isOn: $profile.prefersNotifications) {
+                      Text("Enable Notifications").bold()
+                  }
+                  VStack(alignment: .leading, spacing: 20) {
+                      Text("Seasonal Photo").bold()
+                      Picker("Seasonal Photo", selection: $profile.seasonalPhoto) {
+                          ForEach(Profile.Season.allCases) { season in
+                              Text(season.rawValue).tag(season)
+                          }
+                      }
+                      .pickerStyle(.segmented)
+                  }
+                  DatePicker(selection: $profile.goalDate, in: dateRange, displayedComponents: .date) {
+                      Text("Goal Date").bold()
+                  }
+              }
+          }
+      }
+      ...
+     ```
+
+   - <img src="./resources/images/profile_editor.png" alt="Profile Editor" width="200"/>
