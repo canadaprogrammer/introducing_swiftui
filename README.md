@@ -12,42 +12,6 @@
     - [Building Lists and Navigation](#building-lists-and-navigation)
       - [Create a Landmark Model](#create-a-landmark-model)
       - [Create the Row View](#create-the-row-view)
-      - [Customize the Row Preview](#customize-the-row-preview)
-      - [Create the List of Landmarks](#create-the-list-of-landmarks)
-      - [Make the List Dynamic](#make-the-list-dynamic)
-      - [Set up Navigation Between List and Detail](#set-up-navigation-between-list-and-detail)
-      - [Pass Data into Child View](#pass-data-into-child-view)
-      - [Generate Previews Dynamically](#generate-previews-dynamically)
-    - [Handling User Input](#handling-user-input)
-      - [Mark the User's Favorite Landmarks](#mark-the-users-favorite-landmarks)
-      - [Filter the List View](#filter-the-list-view)
-      - [Add a Control to Toggle the State](#add-a-control-to-toggle-the-state)
-      - [Use an Observable Object for Storage](#use-an-observable-object-for-storage)
-      - [Adopt the Model Object in Your Views](#adopt-the-model-object-in-your-views)
-      - [Create a Favorite Button for Each Landmark](#create-a-favorite-button-for-each-landmark)
-  - [Drawing and Animation](#drawing-and-animation)
-    - [Drawing Paths and Shapes](#drawing-paths-and-shapes)
-      - [Create Drawing Data for a Badge View](#create-drawing-data-for-a-badge-view)
-      - [Draw the Badge Background](#draw-the-badge-background)
-      - [Draw the Badge Symbol](#draw-the-badge-symbol)
-      - [Combine the Badge Foreground and Background](#combine-the-badge-foreground-and-background)
-    - [Animating Views and Transitions](#animating-views-and-transitions)
-      - [Add Hiking Data to the App](#add-hiking-data-to-the-app)
-      - [Add Animations to Individual Views](#add-animations-to-individual-views)
-      - [Animate the Effects of State Changes](#animate-the-effects-of-state-changes)
-      - [Customize View Transitions](#customize-view-transitions)
-      - [Compose Animations for Complex Effects](#compose-animations-for-complex-effects)
-  - [App Design and Layout](#app-design-and-layout)
-    - [Composing Complex Interfaces](#composing-complex-interfaces)
-      - [Add a Category View](#add-a-category-view)
-      - [Create a Category List](#create-a-category-list)
-      - [Create a Category Row](#create-a-category-row)
-      - [Complete the Category View](#complete-the-category-view)
-      - [Add Navigation Between Sections](#add-navigation-between-sections)
-    - [Working with UI Controls](#working-with-ui-controls)
-      - [Display a User Profile](#display-a-user-profile)
-      - [Add an Edit Mode](#add-an-edit-mode)
-      - [Define the Profile Editor](#define-the-profile-editor)
 
 ## SwiftUI Essentials
 
@@ -2173,7 +2137,7 @@
       struct Profile {
           var username: String
           var prefersNotifications = true
-          var seasonlPhoto = Season.winter
+          var seasonalPhoto = Season.winter
           var goalDate = Date()
 
           static let `default` = Profile(username: "g_kumar")
@@ -2229,7 +2193,7 @@
                           .font(.title)
 
                       Text("Notifications: \(profile.prefersNotifications ? "On" : "Off")")
-                      Text("Seasonal Photos: \(profile.seasonlPhoto.rawValue)")
+                      Text("Seasonal Photos: \(profile.seasonaSlPhoto.rawValue)")
                       Text("Goal Date: ") + Text(profile.goalDate, style: .date)
                   }
               }
@@ -2510,3 +2474,43 @@
      ```
 
    - <img src="./resources/images/profile_editor.png" alt="Profile Editor" width="200"/>
+
+#### Delay Edit Propagation
+
+- To make it so edits don't take effect until after the user exits edit mode, you use the draft copy of their profile during editing, then assign the draft copy to the real copy only when the user confirms an edit.
+
+1. Add a cancel button to `ProfileHost`.
+   1. Unlike the Done button that `EditButton` provides, the Cancel button doesn't apply the edits to the real profile data in its closure.
+2. Apply the `onAppear(perform:)` and `onDisappear(perform:)` modifiers to populate the editor with the correct profile data and update the persistent profile when the user taps the Done button.
+   1. Otherwise, the old views appear the next time edit mode activates.
+
+- ```swift
+    ...
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack {
+                if editMode?.wrappedValue == .active {
+                    Button("Cancel", role: .cancel) {
+                        draftProfile = modelData.profile
+                        editMode?.animation().wrappedValue = .inactive
+                    }
+                }
+                Spacer()
+                EditButton()
+            }
+            if editMode?.wrappedValue == .inactive {
+                ProfileSummary(profile: modelData.profile)
+            } else {
+                ProfileEditor(profile: $draftProfile)
+                    .onAppear {
+                        draftProfile = modelData.profile
+                    }
+                    .onDisappear {
+                        modelData.profile = draftProfile
+                    }
+            }
+        }
+        .padding()
+    }
+    ...
+  ```
