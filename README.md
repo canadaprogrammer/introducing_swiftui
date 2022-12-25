@@ -12,6 +12,9 @@
     - [Building Lists and Navigation](#building-lists-and-navigation)
       - [Create a Landmark Model](#create-a-landmark-model)
       - [Create the Row View](#create-the-row-view)
+  - [Framework Integration](#framework-integration)
+    - [Interfacing with UIKit](#interfacing-with-uikit)
+      - [Create a View to Represent a UIPageViewController](#create-a-view-to-represent-a-uipageviewcontroller)
 
 ## SwiftUI Essentials
 
@@ -1185,7 +1188,7 @@
       1. As you navigate from the list to the detail and tap the button, those changes presis when you return to the list.
       2. Because both views access the same model object in the environment, the two views maintain consistency.
 
-      - <video src="https://user-images.githubusercontent.com/25374253/206947980-6b8bee85-08d3-4b44-a388-b5615e0d3440.mp4" controls="controls" style="max-width: 400px;"></video>
+   - <video src="https://user-images.githubusercontent.com/25374253/206947980-6b8bee85-08d3-4b44-a388-b5615e0d3440.mp4" controls="controls" style="max-width: 400px;"></video>
 
 ## Drawing and Animation
 
@@ -2514,3 +2517,132 @@
     }
     ...
   ```
+
+## Framework Integration
+
+- Use SwiftUI views together with the views and view controllers from platform-specific UI frameworks.
+
+### Interfacing with UIKit
+
+- SwiftUI works seamlessly with the existing UI framworks on all Apple platforms.
+- For example, you can place UIKit views and view controllers inside SwiftUI views, and vice versa.
+- This tutorial shows you how to convert the featured landmark from the home screen to wrap instances of UIPageViewController and UIPageControl.
+- You'll use UIPageViewController to display a carousel of SwiftUI views, and use state variables and bindings to coordinate data updates throughout the user interface.
+- [Project files](https://docs-assets.developer.apple.com/published/242e2bc4bd32f82ad6c54ca5cd01f222/InterfacingWithUIKit.zip)
+
+#### Create a View to Represent a UIPageViewController
+
+- To represent UIKit views and view controllers in SwiftUI, you create types that conform to the UIViewRepresentable and UIViewControllerRepresentable protocol.
+- You custom types create and configure the UIKit types that they represent, while SwiftUI manages their life cycle and updates them when needed.
+
+1. Create a PageView group in your project's Views folder, and add a new Swift file named `PageViewController.swift`;
+2. Declare the `PageViewController` type as conforming to `UIViewControllerRepresentable`.
+   1. The page view controller stores an array of Page instances, which must be a type of View.
+   2. These are the pages you use to scroll between landmarks.
+3. Add the two requirements for the UIViewControllerRepresentable protocol.
+
+   1. Add a `makeUIViewController(context:)` method that create a `UIPageViewController` with the desired configuration.
+      1. SwiftUI calls this method a single time when it's ready to display the view, and then manages the view controller's life cycle.
+   2. Add an `updateUIViewController(_:context:)` method that calls `setViewControllers(_:direction:animated:)` to provide a view controller for display.
+      1. For now, you create the `UIHostingController` that hosts the page SwiftUI view on every update.
+      2. Later, you'll make this more efficient by initializing the controller only once for the life of the page view controller.
+
+   - ```swift
+      import SwiftUI
+      import UIKit
+
+      struct PageViewController<Page: View>: UIViewControllerRepresentable {
+          var pages: [Page]
+
+          func makeUIViewController(context: Context) -> UIPageViewController {
+              let pageViewController = UIPageViewController(
+                  transitionStyle: .scroll,
+                  navigationOrientation: .horizontal)
+
+              return pageViewController
+          }
+
+          func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
+              pageViewController.setViewControllers(
+                  [UIHostingController(rootView: pages[0])], direction: .forward, animated: true)
+          }
+      }
+     ```
+
+4. Prepare a feature card for use as a page.
+
+   1. Drag the images in the Project files' Resources directory into your app's Asset catalog.
+      1. A landmark's feature image, if it exists, has different dimensions than the regular image.
+      2. <img src="./resources/images/ui_page_view_assets.png" alt="UI Page View Assets" width="400"/>
+   2. Add a computed property to the Landmark structure, `Landmark.swift`, that returns the `featureImage`, if it exists.
+      1. `var featureImage: Image:? { isFeatured ? Image(imageName + "_feature") : nil }`
+   3. Add a new SwiftUi view file, named `FeatureCard.swift` that displays the landmark's feature image.
+   4. Overlay text information about the landmark on the image.
+
+   - ```swift
+      import SwiftUI
+
+      struct FeatureCard: View {
+          var landmark: Landmark
+          var body: some View {
+              landmark.featureImage?
+                  .resizable()
+                  .aspectRatio( 3 / 2, contentMode: .fit)
+                  .overlay(
+                      TextOverlay(landmark: landmark)
+                  )
+          }
+      }
+
+      struct TextOverlay: View {
+          var landmark: Landmark
+          var gradient: LinearGradient {
+              .linearGradient(Gradient(colors: [.black.opacity(0.6), .black.opacity(0)]), startPoint: .bottom, endPoint: .center)
+          }
+          var body: some View {
+              ZStack(alignment: .bottomLeading) {
+                  gradient
+                  VStack(alignment: .leading) {
+                      Text(landmark.name)
+                          .font(.title)
+                          .bold()
+                      Text(landmark.park)
+                  }
+                  .padding()
+              }
+              .foregroundColor(.white)
+          }
+      }
+
+      struct FeatureCard_Previews: PreviewProvider {
+          static var previews: some View {
+              FeatureCard(landmark: ModelData().features[0])
+          }
+      }
+     ```
+
+   - <img src="./resources/images/feature_card.png" alt="Feature Card" width="200"/>
+
+5. You'll create a custom view to present your `UIViewControllerRepresentable` view.
+
+   1. Create a new SwiftUI view file, named `PageView.swift`, and update the PageView type to declare PageViewController as a child view.
+      1. The preview fails because Xcode can't infer a type for Page.
+   2. Update the preview provider to pass the required array of views, and the preview starts working.
+
+   - ```swift
+      import SwiftUI
+
+      struct PageView<Page: View>: View {
+          var pages: [Page]
+          var body: some View {
+              PageViewController(pages: pages)
+          }
+      }
+
+      struct PageView_Previews: PreviewProvider {
+          static var previews: some View {
+              PageView(pages: ModelData().features.map { FeatureCard(landmark: $0) })
+                  .aspectRatio(3/2, contentMode: .fit)
+          }
+      }
+     ```
