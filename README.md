@@ -12,6 +12,43 @@
     - [Building Lists and Navigation](#building-lists-and-navigation)
       - [Create a Landmark Model](#create-a-landmark-model)
       - [Create the Row View](#create-the-row-view)
+      - [Customize the Row Preview](#customize-the-row-preview)
+      - [Create the List of Landmarks](#create-the-list-of-landmarks)
+      - [Make the List Dynamic](#make-the-list-dynamic)
+      - [Set up Navigation Between List and Detail](#set-up-navigation-between-list-and-detail)
+      - [Pass Data into Child View](#pass-data-into-child-view)
+      - [Generate Previews Dynamically](#generate-previews-dynamically)
+    - [Handling User Input](#handling-user-input)
+      - [Mark the User's Favorite Landmarks](#mark-the-users-favorite-landmarks)
+      - [Filter the List View](#filter-the-list-view)
+      - [Add a Control to Toggle the State](#add-a-control-to-toggle-the-state)
+      - [Use an Observable Object for Storage](#use-an-observable-object-for-storage)
+      - [Adopt the Model Object in Your Views](#adopt-the-model-object-in-your-views)
+      - [Create a Favorite Button for Each Landmark](#create-a-favorite-button-for-each-landmark)
+  - [Drawing and Animation](#drawing-and-animation)
+    - [Drawing Paths and Shapes](#drawing-paths-and-shapes)
+      - [Create Drawing Data for a Badge View](#create-drawing-data-for-a-badge-view)
+      - [Draw the Badge Background](#draw-the-badge-background)
+      - [Draw the Badge Symbol](#draw-the-badge-symbol)
+      - [Combine the Badge Foreground and Background](#combine-the-badge-foreground-and-background)
+    - [Animating Views and Transitions](#animating-views-and-transitions)
+      - [Add Hiking Data to the App](#add-hiking-data-to-the-app)
+      - [Add Animations to Individual Views](#add-animations-to-individual-views)
+      - [Animate the Effects of State Changes](#animate-the-effects-of-state-changes)
+      - [Customize View Transitions](#customize-view-transitions)
+      - [Compose Animations for Complex Effects](#compose-animations-for-complex-effects)
+  - [App Design and Layout](#app-design-and-layout)
+    - [Composing Complex Interfaces](#composing-complex-interfaces)
+      - [Add a Category View](#add-a-category-view)
+      - [Create a Category List](#create-a-category-list)
+      - [Create a Category Row](#create-a-category-row)
+      - [Complete the Category View](#complete-the-category-view)
+      - [Add Navigation Between Sections](#add-navigation-between-sections)
+    - [Working with UI Controls](#working-with-ui-controls)
+      - [Display a User Profile](#display-a-user-profile)
+      - [Add an Edit Mode](#add-an-edit-mode)
+      - [Define the Profile Editor](#define-the-profile-editor)
+      - [Delay Edit Propagation](#delay-edit-propagation)
   - [Framework Integration](#framework-integration)
     - [Interfacing with UIKit](#interfacing-with-uikit)
       - [Create a View to Represent a UIPageViewController](#create-a-view-to-represent-a-uipageviewcontroller)
@@ -492,32 +529,33 @@
      ```
 
 4. With the fixed, you can build the layout for the row.
+
    1. Embed the existing text view in an HStack.
    2. Modify the text view to use the landmark property's name.
    3. Complete the row by adding an image before the text view, and a spacer after it.
 
-- ```swift
-  import SwiftUI
+   - ```swift
+     import SwiftUI
 
-  struct LandmarkRow: View {
-      var landmark: Landmark
-      var body: some View {
-          HStack {
-              landmark.image
-                  .resizable()
-                  .frame(width: 50, height: 50)
-              Text(landmark.name)
-              Spacer()
-          }
-      }
-  }
+     struct LandmarkRow: View {
+         var landmark: Landmark
+         var body: some View {
+             HStack {
+                 landmark.image
+                     .resizable()
+                     .frame(width: 50, height: 50)
+                 Text(landmark.name)
+                 Spacer()
+             }
+         }
+     }
 
-  struct LandmarkRow_Previews: PreviewProvider {
-      static var previews: some View {
-          LandmarkRow(landmark: landmarks[0])
-      }
-  }
-  ```
+     struct LandmarkRow_Previews: PreviewProvider {
+         static var previews: some View {
+             LandmarkRow(landmark: landmarks[0])
+         }
+     }
+     ```
 
 #### Customize the Row Preview
 
