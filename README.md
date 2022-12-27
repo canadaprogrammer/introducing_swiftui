@@ -52,6 +52,7 @@
   - [Framework Integration](#framework-integration)
     - [Interfacing with UIKit](#interfacing-with-uikit)
       - [Create a View to Represent a UIPageViewController](#create-a-view-to-represent-a-uipageviewcontroller)
+      - [Create the View Controller's Data Source](#create-the-view-controllers-data-source)
 
 ## SwiftUI Essentials
 
@@ -2684,3 +2685,106 @@
           }
       }
      ```
+
+#### Create the View Controller's Data Source
+
+1. A SwiftUI view that represents a UIKit view controller can define a `Coordinator` type that SwiftUI manages and provides as part of the representable view's context.
+
+   1. Declare a nested `Coordinator` class inside `PageViewController`.
+      1. SwiftUI manages your `UIViewControllerRepresentable` type's coordinator, and provides it as part of the context when calling the methods you created above.
+   2. Add another method to `PageViewController` to make the coordinator.
+
+      1. SwiftUI calls this `makeCoordinator()` method before `makeUIViewController(context:)`, so that you have access to the coordinator object when configuring your view controller.
+      2. You can use this coordinator to implement common Cocoa patterns, such as delegates, data sources, and responding to user events via target-action.
+
+      - ```swift
+          import SwiftUI
+          import UIKit
+
+          struct PageViewController<Page: View>: UIViewControllerRepresentable {
+              var pages: [Page]
+              func makeCoordinator() -> Coordinator {
+                  Coordinator(self)
+              }
+              func makeUIViewController(context: Context) -> UIPageViewController {
+                  let pageViewController = UIPageViewController(
+                      transitionStyle: .scroll,
+                      navigationOrientation: .horizontal)
+
+                  return pageViewController
+              }
+
+              func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
+                  pageViewController.setViewControllers(
+                      [UIHostingController(rootView: pages[0])], direction: .forward, animated: true)
+              }
+              class Coordinator:NSObject {
+                  var parent: PageViewController
+                  init(_ pageViewController: PageViewController) {
+                      parent = pageViewController
+                  }
+              }
+          }
+        ```
+
+   3. Initialize an array of controllers in the coordinator using the pages array of views.
+
+      1. The coordinator is a good place to store these controllers, because the system initializes them only once, and before you need them to update the view controller.
+
+      - ```swift
+          ...
+              func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
+                  pageViewController.setViewControllers(
+                      [context.coordinator.controllers[0]], direction: .forward, animated: true)
+              }
+              class Coordinator:NSObject {
+                  var parent: PageViewController
+                  var controllers = [UIViewController]()
+
+                  init(_ pageViewController: PageViewController) {
+                      parent = pageViewController
+                      controllers = parent.pages.map { UIHostingController(rootView: $0)}
+                  }
+              }
+          ...
+        ```
+
+   4. Add `UIPageViewControllerDataSource` conformance to the Coordinator type, and implement the two required methods.
+      1. These two methods establish the relationships between view controllers, so that you can swipe back and forth between them.
+   5. Add the coordinator as the data source of the `UIPageViewController`.
+
+      - ```swift
+          struct PageViewController... {
+              ...
+              func makeUIViewController... {
+                  ...
+                  pageViewController.dataSource = context.coordinator
+                  return pageViewController
+              }
+              ...
+              class Coordinator:..., UIPageViewControllerDataSource {
+                  ...
+                  func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+                      guard let index = controllers.firstIndex(of: viewController) else {
+                          return nil
+                      }
+                      if index == 0 {
+                          return controllers.last
+                      }
+                      return controllers[index - 1]
+                  }
+
+                  func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+                      guard let index = controllers.firstIndex(of: viewController) else {
+                          return nil
+                      }
+                      if index + 1 == controllers.count {
+                          return controllers.first
+                      }
+                      return controllers[index + 1]
+                  }
+              }
+          }
+        ```
+
+2. Return to PageView and test out the swipe interactions.
