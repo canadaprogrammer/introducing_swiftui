@@ -2790,5 +2790,3 @@
 2. Return to PageView and test out the swipe interactions.
 
    - <video src="https://user-images.githubusercontent.com/25374253/209610758-856055d0-4714-4169-bf99-183af1727675.mp4" controls="controls" style="max-width: 400px;"></video>
-
-
