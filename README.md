@@ -53,6 +53,7 @@
     - [Interfacing with UIKit](#interfacing-with-uikit)
       - [Create a View to Represent a UIPageViewController](#create-a-view-to-represent-a-uipageviewcontroller)
       - [Create the View Controller's Data Source](#create-the-view-controllers-data-source)
+      - [Track the Page in a SwiftUI View's State](#track-the-page-in-a-swiftui-views-state)
 
 ## SwiftUI Essentials
 
@@ -2790,3 +2791,78 @@
 2. Return to PageView and test out the swipe interactions.
 
    - <video src="https://user-images.githubusercontent.com/25374253/209610758-856055d0-4714-4169-bf99-183af1727675.mp4" controls="controls" style="max-width: 400px;"></video>
+
+#### Track the Page in a SwiftUI View's State
+
+- To prepare for adding a custom `UIPageControl`, you need a way to track the current page from within `PageView`.
+- To do this, you'll declare a `@State` property in `PageView`, and pass a binding to this property down to the `PageViewController` view.
+- The `PageViewController` updates the binding to match the visible page.
+- <img src="./resources/images/track_page.png" alt="Track Page" width="200"/>
+
+1. Start by adding a `currentPage` binding as a property of `PageViewController`.
+
+   1. In addition to declaring the `@Binding` property, you also update the call to `setViewControllers(_:direction:animated:)`, passing the value of the `currentPage` binding.
+
+   - ```swift
+      struct PageViewController<Page: View>: UIViewControllerRepresentable {
+          @Binding var currentPage: Int
+          ...
+          func updateUIViewController(...) {
+              pageViewController.setViewControllers(
+                  [context.coordinator.controllers[currentPage]], ...)
+          }
+     ```
+
+2. Declare the `@State` variable in `PageView`, and pass a binding to the property when creating the child `PageViewController`.
+
+   1. Remember to use the `$` syntax to create a binding to a value that is stored as state.
+   2. Test that the value flows through the binding to the `PageViewController` by changing its initial value.
+      1. Add a button to PageView that makes the page view controller jump to the second view.
+   3. Add a text view with the `currentPage` property, so that you can keep an eye on the `@State` property's value.
+      1. Observe that when you swipe from page to page, the value doesn't change.
+
+   - ```swift
+      struct PageView<Page: View>: View {
+          ...
+          @State private var currentPage = 0 /* 1 */
+          var body: some View {
+              VStack {
+                  PageViewController(pages: pages, currentPage: $currentPage)
+                  Text("Current Page: \(currentPage)")
+              }
+          }
+      }
+     ```
+
+3. In `PageViewController.swift`, conform the coordinator to `UIPageViewControllerDelegate`, and add the `pageViewController(_:didFinishAnimating:previousViewControllers:transitionCompleted completed: Bool)` method.
+   1. Because SwiftUI calls this method whenever a page switching animation completes, you can find the index of the current view controller and update the binding.
+4. Assign the coordinator as the delegate for the `UIPageViewController`, in addition to the data source.
+
+   1. When the binding connected in both directions, the text view updates to show the correct page number after each swipe.
+
+   - ```swift
+      struct PageViewController<Page: View>: UIViewControllerRepresentable {
+          ...
+          func makeUIViewController(context: Context) -> UIPageViewController {
+              ...
+              pageViewController.delegate = context.coordinator
+              return pageViewController
+          }
+          ...
+          class Coordinator:..., UIPageViewControllerDelegate {
+              ...
+              func pageViewController(
+                  _ pageViewController: UIPageViewController,
+                  didFinishAnimating finished: Bool,
+                  previousViewControllers: [UIViewController],
+                  transitionCompleted completed: Bool
+              ) {
+                  if completed,
+                    let visibleViewController = pageViewController.viewControllers?.first,
+                    let index = controllers.firstIndex(of: visibleViewController) {
+                      parent.currentPage = index
+                  }
+              }
+          }
+      }
+     ```
