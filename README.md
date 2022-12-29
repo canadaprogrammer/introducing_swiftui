@@ -54,6 +54,7 @@
       - [Create a View to Represent a UIPageViewController](#create-a-view-to-represent-a-uipageviewcontroller)
       - [Create the View Controller's Data Source](#create-the-view-controllers-data-source)
       - [Track the Page in a SwiftUI View's State](#track-the-page-in-a-swiftui-views-state)
+      - [Add a Custom Page Control](#add-a-custom-page-control)
 
 ## SwiftUI Essentials
 
@@ -2865,4 +2866,96 @@
               }
           }
       }
+     ```
+
+#### Add a Custom Page Control
+
+- You're ready to add a custom `UIPageControl` to your view, wrapped in SwiftUI `UIViewRepresentable` view.
+- <img src="./resources/images/custom_page_control.png" alt="Custom Page Control" width="300"/>
+
+1. Create a new SwiftUI view file, named `PageControl.swift`.
+2. Update the PageControl type to conform to the `UIViewRepresentable` protocol.
+
+   1. `UIViewRepresentable` and `UIViewControllerRepresentable` types have the same life cycle, with methods that correspond to their underlying `UIKit` types.
+
+   - ```swift
+      import SwiftUI
+
+      struct PageView<Page: View>: View {
+          var pages: [Page]
+          @State private var currentPage = 0 // 1
+          var body: some View {
+              VStack {
+                  PageViewController(pages: pages, currentPage: $currentPage)
+                  Text("Current Page: \(currentPage)")
+              }
+          }
+      }
+
+      struct PageView_Previews: PreviewProvider {
+          static var previews: some View {
+              PageView(pages: ModelData().features.map { FeatureCard(landmark: $0) })
+                  .aspectRatio(3/2, contentMode: .fit)
+          }
+      }
+     ```
+
+3. On `PageView.swift`, replace the text box with the page control, switching from a `VStack` to a `ZStack` for layout.
+
+   1. Because you're passing the page count and the binding to the current page, the page control is already showing the correct values.
+
+   - ```swift
+      var body: some View {
+          ZStack(alignment:.bottomTrailing) {
+              PageViewController(pages: pages, currentPage: $currentPage)
+              PageControl(numberOfPages: pages.count, currentPage: $currentPage)
+                  .frame(width: CGFloat(pages.count * 18))
+                  .padding(.trailing)
+
+          }
+      }
+     ```
+
+4. Make the page control interactive so users can tap one side or the other to move between pages.
+
+   1. Create a nested `Coordinator` type in `PageControl`, and add a `makeCoordinator()` method to create and return a new coordinator.
+      1. Because `UIControl` subclasses like `UIPageControl` use the target-action pattern instead of delegation, this `Coordinator` implements an `@objc` method to update the current page binding.
+   2. Add the coordinator as the target for the `valueChanged` event, specifying the `updateCurrentPage(sender:)` method as the action to perform.
+
+   - ```swift
+      struct PageControl: UIViewRepresentable {
+          ...
+          func makeCoordinator() -> Coordinator {
+              Coordinator(self)
+          }
+          func makeUIView(context: Context) -> UIPageControl {
+              ...
+              control.addTarget(
+                  context.coordinator,
+                  action: #selector(Coordinator.updateCurrentPage(sender:)),
+                  for: .valueChanged)
+
+              return control
+          }
+          ...
+          class Coordinator: NSObject {
+              var control: PageControl
+              init(_ control: PageControl) {
+                  self.control = control
+              }
+              @objc
+              func updateCurrentPage(sender: UIPageControl) {
+                  control.currentPage = sender.currentPage
+              }
+          }
+      }
+     ```
+
+5. Finally, in `CategoryHome`, replace the placeholder feature image with the new page view.
+
+   - ```swift
+      List {
+          PageView(pages: modelData.features.map { FeatureCard(landmark: $0)})
+              .aspectRatio(3/2, contentMode: .fit)
+              .listRowInsets(EdgeInsets())
      ```
