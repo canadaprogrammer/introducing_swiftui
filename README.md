@@ -55,6 +55,8 @@
       - [Create the View Controller's Data Source](#create-the-view-controllers-data-source)
       - [Track the Page in a SwiftUI View's State](#track-the-page-in-a-swiftui-views-state)
       - [Add a Custom Page Control](#add-a-custom-page-control)
+    - [Creating a watchOS App](#creating-a-watchos-app)
+      - [Add a watchOS Target](#add-a-watchos-target)
 
 ## SwiftUI Essentials
 
@@ -2961,3 +2963,36 @@
      ```
 
    - <video src="https://user-images.githubusercontent.com/25374253/209903027-3cc53973-794a-4589-909a-86020334be2d.mp4" controls="controls" style="max-width: 400px;"></video>
+
+### Creating a watchOS App
+
+- You'll start by adding a watchOS target to your project, before copying over the shared data and views you created for the iOS app.
+- With all of the assets in place, you'll customize the SwiftUI views to display the detail and list views on watchOS.
+- [Project files](https://docs-assets.developer.apple.com/published/d46bb54c0c90d4e01351338f4627245e/CreatingAwatchOSApp.zip)
+
+#### Add a watchOS Target
+
+- To create a watchOS app, start by adding a watchOS target to the project.
+- Xcode adds groups and files for the watchOS app to your project, along with the schemes needed to build and run the app.
+- <img src="./resources/images/watchOS_target.png" alt="WatchOS Target" width="300"/>
+
+1. Choose File > New > Target.
+   1. When the template sheet appears, choose the `watchOS` tab, select the `App` and click Next.
+      1. If you didn't install WatchOS, install WatchOS.
+      2. This template adds a new watchOS app to your project, setting the iOS app as its companion.
+   2. In the sheet,
+      1. Enter `WatchLandmarks` as the Product Name.
+      2. Set the Bundle Identifier to `Watch App for Existing iOS App`.
+      3. Choose the `Landmarks` app.
+      4. Click Finish.
+   3. If prompted by Xcode to activate the WatchLandmarks (Complication) scheme, click `Cancel`.
+      1. You're going to want to start with the WatchLandmarks scheme instead, which you choose next.
+2. Select the `WatchLandmarks Watch App` scheme.
+   1. This lets you build and run your watchOS app.
+   2. <img src="./resources/images/watchLandmarks_scheme.png" alt="WatchLandmarks Scheme" width="400"/>
+3. Click `Landmarks` project.
+   1. Select the `WatchLandmarks Watch App` project and navigate to the project's `General` tab;
+      1. Select the `Supports Running Without iOS App Installation` checkbox.
+      2. Whenever possible, create an independent watchOS app.
+      3. Independent watchOS app don't require an iOS companion app.
+      4. <img src="./resources/images/supports_without_ios_app.png" alt="Supports Running Without iOS App" width="500"/>
