@@ -57,6 +57,7 @@
       - [Add a Custom Page Control](#add-a-custom-page-control)
     - [Creating a watchOS App](#creating-a-watchos-app)
       - [Add a watchOS Target](#add-a-watchos-target)
+      - [Share Files Between Targets](#share-files-between-targets)
 
 ## SwiftUI Essentials
 
@@ -2985,14 +2986,42 @@
       2. Set the Bundle Identifier to `Watch App for Existing iOS App`.
       3. Choose the `Landmarks` app.
       4. Click Finish.
-   3. If prompted by Xcode to activate the WatchLandmarks (Complication) scheme, click `Cancel`.
+      5. <img src="./resources/images/options_for_target.png" alt="Options For Target" width="300"/>
+   3. ~~If prompted by Xcode to activate the WatchLandmarks (Complication) scheme, click `Cancel`.~~
       1. You're going to want to start with the WatchLandmarks scheme instead, which you choose next.
 2. Select the `WatchLandmarks Watch App` scheme.
    1. This lets you build and run your watchOS app.
    2. <img src="./resources/images/watchLandmarks_scheme.png" alt="WatchLandmarks Scheme" width="400"/>
-3. Click `Landmarks` project.
+3. Click `Landmarks` project in the Project navigator.
    1. Select the `WatchLandmarks Watch App` project and navigate to the project's `General` tab;
       1. Select the `Supports Running Without iOS App Installation` checkbox.
       2. Whenever possible, create an independent watchOS app.
       3. Independent watchOS app don't require an iOS companion app.
       4. <img src="./resources/images/supports_without_ios_app.png" alt="Supports Running Without iOS App" width="500"/>
+
+#### Share Files Between Targets
+
+- Withe the watchOS target set, you'll need to share some resources from the iOS target.
+- You'll reuse the Landmark app's data model, some resource files, as well as any views that both platforms can display without modification.
+
+1. ~~Delete the entry point for the watchOS app~~.
+   1. You don't need it because you'll reuse the entry point defined in LandmarksApp.swift instead.
+      1. ~~In the Project navigator, delete the first item in the WatchLandmarks Extension folder; When asked, choose Move to trash.~~
+         1. This file holds the Watch-specific app definition. Its name depends on the Xcode project name, but it's always the first item in the WatchLandmarks Extension group.
+         2. You'll reuse the iOS app definition instead, in the next few steps.
+2. Select all the files, including the app's entry point, that your watchOS target can share with the existing iOS target.
+   1. In the Project navigator, Command-click to select the following files: LandmarksApp.swift, LandmarkList.swift, LandmarkRow.swift, CircleImage.swift, MapView.swift.
+      1. The first of these is the shared app definition.
+      2. The others are views that the app can display on watchOS with no changes.
+   2. Continue Command-clicking to add the following model files: ModelData.swift, Landmark.swift, Hike.swift, Profile.swift.
+      1. These items define the app's data model.
+      2. You won't use all aspects of the model, but you need all of the files to successfully complie the app.
+   3. Finish Command-clicking to add resource files loaded by the model: landmarkData.json, hikeDta.json, and Assets.xcassets.
+   4. <img src="./resources/images/sharing_files.png" alt="Sharing Files" width="200"/>
+   5. In the File inspector, select the `WatchLandmarks Watch` App checkbox in the Target Membership section.
+      1. This makes the selected files available to your watchOS app.
+      2. <img src="./resources/images/select_target_membership.png" alt="Select Target Membership" width="200"/>
+3. Add a watchOS app icon that matches the iOS app icon you already have.
+   1. Select the Assets.xcasset file in the `WatchLandmarks Watch App` folder and delete the empty AppIcon item.
+   2. Drag the AppIcon.appiconset folder the the downloaded projects' Resources folder into the WatchLandmark's Asset catalog.
+      1. Later, when you create a notification, the system presents your app's icon to help identify the source of the notification.
