@@ -58,6 +58,7 @@
     - [Creating a watchOS App](#creating-a-watchos-app)
       - [Add a watchOS Target](#add-a-watchos-target)
       - [Share Files Between Targets](#share-files-between-targets)
+      - [Create the Detail View](#create-the-detail-view)
 
 ## SwiftUI Essentials
 
@@ -3025,3 +3026,83 @@
    1. Select the Assets.xcasset file in the `WatchLandmarks Watch App` folder and delete the empty AppIcon item.
    2. Drag the AppIcon.appiconset folder the the downloaded projects' Resources folder into the WatchLandmark's Asset catalog.
       1. Later, when you create a notification, the system presents your app's icon to help identify the source of the notification.
+
+#### Create the Detail View
+
+- You'll need to create a watch-specific view for displaying landmark details.
+- To test the detail view, you'll create custom previews for the largest and smallest watch sizes, and make some changes to the circle view so everything fits on the watch face.
+
+1. Add a new custom SwiftUI view to the `WatchLandmarks Watch App` folder named `LandmarkDetail.swift`.
+
+   1. This file is distinguished from the file with the same name in the iOS project by its target membership - it applies only to the watch target.
+   2. Add the modelData, landmark, and landmarkIndex properties to the new LandmarkDetail structure.
+      1. These are identical to the properties you added in [Handling User Input](#handling-user-input).
+   3. In the preview, create an instance of the model data, and use it to pass a landmark object ot the LandmarkDetail structure's initializer.
+   4. You also need to set the view's environment object.
+      1. Remove `@main` from `WatchLandmarksApp.swift`
+   5. Return a `CircleImage` view from the body() method.
+   6. Create previews for the largest (44mm) and smallest (40mm) watch faces.
+   7. Embed the circle image in a VStack. Display the landmark name and its information below the image.
+   8. Wrap the vertical stack in a `ScrollView`.
+      1. This turns on view scrolling, but it creates another problem: the circle image now expands to full size, and it resizes other UI elements to match the image size.
+      2. You'll need to resize the circle image so that just the circle and landmark name appear onscreen.
+   9. Change `scaleToFill()` to `scaleToFit()` and add padding.
+      1. This scales the circle image to match the display's width and ensures the landmark name is visible below the circle image.
+   10. Add the AmpView after a divider.
+       1. The map appears off screen, but if you enable live preview, you can scroll down to see it.
+   11. Add a title to the back button.
+       1. This sets the text for the back button to "Landmarks".
+
+   - ```swift
+      import SwiftUI
+
+      struct LandmarkDetail: View {
+          @EnvironmentObject var modelData: ModelData
+          var landmark: Landmark
+          var landmarkIndex: Int {
+              modelData.landmarks.firstIndex(where: { $0.id == landmark.id })!
+          }
+          var body: some View {
+              ScrollView {
+                  VStack {
+                      CircleImage(image: landmark.image.resizable())
+                          .scaledToFit()
+                      Text(landmark.name)
+                          .font(.headline)
+                          .lineLimit(0)
+                      Toggle(isOn: $modelData.landmarks[landmarkIndex].isFavorite) {
+                          Text("Favorite")
+                      }
+                      Divider()
+                      Text(landmark.park)
+                          .font(.caption)
+                          .bold()
+                          .lineLimit(0)
+                      Text(landmark.state)
+                          .font(.caption)
+                      Divider()
+                      MapView(coordinate: landmark.locationCoordinates)
+                          .scaledToFit()
+                  }
+                  .padding(16)
+              }
+              .navigationTitle("Landmarks")
+          }
+      }
+
+      struct LandmarkDetail_Previews: PreviewProvider {
+          static var previews: some View {
+              let modelData = ModelData()
+              return Group {
+                  LandmarkDetail(landmark: modelData.landmarks[0])
+                      .environmentObject(modelData)
+                      .previewDevice("Apple Watch Series 5 - 44mm")
+                  LandmarkDetail(landmark: modelData.landmarks[1])
+                      .environmentObject(modelData)
+                      .previewDevice("Apple Watch Series 5 - 40mm")
+              }
+          }
+      }
+     ```
+
+   12. Issue: Navigation Title didn't work.
