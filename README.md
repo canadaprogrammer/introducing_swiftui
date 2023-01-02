@@ -59,6 +59,7 @@
       - [Add a watchOS Target](#add-a-watchos-target)
       - [Share Files Between Targets](#share-files-between-targets)
       - [Create the Detail View](#create-the-detail-view)
+      - [Add the Landmarks List](#add-the-landmarks-list)
 
 ## SwiftUI Essentials
 
@@ -3051,58 +3052,91 @@
    10. Add the AmpView after a divider.
        1. The map appears off screen, but if you enable live preview, you can scroll down to see it.
    11. Add a title to the back button.
+
        1. This sets the text for the back button to "Landmarks".
+
+       - ```swift
+           import SwiftUI
+
+           struct LandmarkDetail: View {
+               @EnvironmentObject var modelData: ModelData
+               var landmark: Landmark
+               var landmarkIndex: Int {
+                   modelData.landmarks.firstIndex(where: { $0.id == landmark.id })!
+               }
+               var body: some View {
+                   ScrollView {
+                       VStack {
+                           CircleImage(image: landmark.image.resizable())
+                               .scaledToFit()
+                           Text(landmark.name)
+                               .font(.headline)
+                               .lineLimit(0)
+                           Toggle(isOn: $modelData.landmarks[landmarkIndex].isFavorite) {
+                               Text("Favorite")
+                           }
+                           Divider()
+                           Text(landmark.park)
+                               .font(.caption)
+                               .bold()
+                               .lineLimit(0)
+                           Text(landmark.state)
+                               .font(.caption)
+                           Divider()
+                           MapView(coordinate: landmark.locationCoordinates)
+                               .scaledToFit()
+                       }
+                       .padding(16)
+                   }
+                   .navigationTitle("Landmarks")
+               }
+           }
+
+           struct LandmarkDetail_Previews: PreviewProvider {
+               static var previews: some View {
+                   let modelData = ModelData()
+                   return Group {
+                       LandmarkDetail(landmark: modelData.landmarks[0])
+                           .environmentObject(modelData)
+                           .previewDevice("Apple Watch Series 5 - 44mm")
+                       LandmarkDetail(landmark: modelData.landmarks[1])
+                           .environmentObject(modelData)
+                           .previewDevice("Apple Watch Series 5 - 40mm")
+                   }
+               }
+           }
+         ```
+
+   12. Issue: Navigation Title didn't work.
+
+#### Add the Landmarks List
+
+- The landmarkList that you created for iOS works for your watch app as well, and it automatically navigates to the watch-specific detail view that you just created when compiled for watchOs.
+- Next, you'll connect the list to the watch's ContentView, so that it acts as the top level view for the watch app.
+
+1. Select ContentView.swift in the WatchLandmarks Watch App folder.
+   1. Like LandmarkDetail.swift the content view for the watchOS target has the same name as the one for the iOS target.
+   2. Keeping names and interfaces the same makes it easy to share files between targets.
+   3. The watchOS app's root view displays the default "Hello, World!" message.
+2. Modify ContentView so that it displays the List View.
+
+   1. Be sure to provide the model data as an environment object to the preview.
+   2. The LandmarksApp already provides this at the app level at run time, just as it does for iOS, but you also have to provide it for any previews that need it.
 
    - ```swift
       import SwiftUI
 
-      struct LandmarkDetail: View {
-          @EnvironmentObject var modelData: ModelData
-          var landmark: Landmark
-          var landmarkIndex: Int {
-              modelData.landmarks.firstIndex(where: { $0.id == landmark.id })!
-          }
+      struct ContentView: View {
           var body: some View {
-              ScrollView {
-                  VStack {
-                      CircleImage(image: landmark.image.resizable())
-                          .scaledToFit()
-                      Text(landmark.name)
-                          .font(.headline)
-                          .lineLimit(0)
-                      Toggle(isOn: $modelData.landmarks[landmarkIndex].isFavorite) {
-                          Text("Favorite")
-                      }
-                      Divider()
-                      Text(landmark.park)
-                          .font(.caption)
-                          .bold()
-                          .lineLimit(0)
-                      Text(landmark.state)
-                          .font(.caption)
-                      Divider()
-                      MapView(coordinate: landmark.locationCoordinates)
-                          .scaledToFit()
-                  }
-                  .padding(16)
-              }
-              .navigationTitle("Landmarks")
+              Text("Hello, world!")
+                  LandmarkList()
           }
       }
 
-      struct LandmarkDetail_Previews: PreviewProvider {
+      struct ContentView_Previews: PreviewProvider {
           static var previews: some View {
-              let modelData = ModelData()
-              return Group {
-                  LandmarkDetail(landmark: modelData.landmarks[0])
-                      .environmentObject(modelData)
-                      .previewDevice("Apple Watch Series 5 - 44mm")
-                  LandmarkDetail(landmark: modelData.landmarks[1])
-                      .environmentObject(modelData)
-                      .previewDevice("Apple Watch Series 5 - 40mm")
-              }
+              ContentView()
+                  .environmentObject(ModelData())
           }
       }
      ```
-
-   12. Issue: Navigation Title didn't work.
