@@ -3122,6 +3122,7 @@
 
    1. Be sure to provide the model data as an environment object to the preview.
    2. The LandmarksApp already provides this at the app level at run time, just as it does for iOS, but you also have to provide it for any previews that need it.
+   - <video src="https://user-images.githubusercontent.com/25374253/210272983-5809fbad-971e-4f1b-b5a2-69361aade770.mp4" controls="controls" style="max-width: 400px;"></video>
 
    - ```swift
       import SwiftUI
@@ -3140,3 +3141,4 @@
           }
       }
      ```
+     
