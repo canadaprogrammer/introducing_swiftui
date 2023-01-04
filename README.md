@@ -60,6 +60,7 @@
       - [Share Files Between Targets](#share-files-between-targets)
       - [Create the Detail View](#create-the-detail-view)
       - [Add the Landmarks List](#add-the-landmarks-list)
+      - [Create a Custom Notification Interface](#create-a-custom-notification-interface)
 
 ## SwiftUI Essentials
 
@@ -3122,6 +3123,7 @@
 
    1. Be sure to provide the model data as an environment object to the preview.
    2. The LandmarksApp already provides this at the app level at run time, just as it does for iOS, but you also have to provide it for any previews that need it.
+
    - <video src="https://user-images.githubusercontent.com/25374253/210272983-5809fbad-971e-4f1b-b5a2-69361aade770.mp4" controls="controls" style="max-width: 400px;"></video>
 
    - ```swift
@@ -3141,4 +3143,12 @@
           }
       }
      ```
-     
+
+#### Create a Custom Notification Interface
+
+- Create a notification interface that displays landmark information whenever you receive a notification indicating that you are close to one of your favorite locations.
+  - This section only covers how to display the notification after you receive it.
+  - It doesn't describe how to set up or send notifications.
+
+1. Open `NotificationView.swift` and create a view that displays information about a landmark, title, and message.
+   1. There is no NotivicationView.swift because of no Extension folder.
