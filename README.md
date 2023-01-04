@@ -61,6 +61,8 @@
       - [Create the Detail View](#create-the-detail-view)
       - [Add the Landmarks List](#add-the-landmarks-list)
       - [Create a Custom Notification Interface](#create-a-custom-notification-interface)
+    - [Creating a macOS App](#creating-a-macos-app)
+      - [Add a macOS Target to the Project](#add-a-macos-target-to-the-project)
 
 ## SwiftUI Essentials
 
@@ -3151,4 +3153,65 @@
   - It doesn't describe how to set up or send notifications.
 
 1. Open `NotificationView.swift` and create a view that displays information about a landmark, title, and message.
-   1. There is no NotivicationView.swift because of no Extension folder.
+   1. There is no NotificationView.swift because of no Extension folder.
+
+### Creating a macOS App
+
+- You'll start by adding a macOS target to your project, and then resuing views and data you created earlier.
+- With a foundation in place, you'll add some new views tailored to macOS, and modify others to work better across platforms.
+- [Project files](https://docs-assets.developer.apple.com/published/20cb0d0f29f7bcf5f42001de14ab9838/CreatingAmacOSApp.zip)
+
+#### Add a macOS Target to the Project
+
+- Start by adding a macOS target to the project.
+- Xcode adds a new group and set of starter files for the macOS app, along with the scheme needed to build and run the app.
+- You'll then add some existing files to the new target.
+- To be able to preview and run the app, be sure your Mac is running macOS Monterey or later.
+
+1. Choose File > New > Target. When the template sheet appears, choose the macOS tab, select the app template on the application section, and click Next.
+   1. This template adds a new macOS app target to the project.
+   2. In the sheet,
+      1. Enter MacLandmarks as the Product Name.
+      2. Set the interface to SwiftUI,
+      3. And the language to Swift,
+      4. And then click Finish.
+2. Set the scheme to MacLandmarks > My Mac.
+   1. By setting the scheme to My Mac, you can preview, build, and run the macOS app.
+   2. As you move through the tutorial, you'll use the other schemes to keep an eye on how other targets respond to changes in shared files.
+   3. <img src="./resources/images/scheme_my_mac.png" alt="Scheme My Mac" width="200"/>
+3. In the MacLandmarks group, select ContentView.swift, open the Canvas, and click Resume to see the preview.
+4. In the Project navigator, delete the MacLandmarksApp.swift file from the MacLandmarks group.
+   1. When asked, choose Move to Trash.
+   2. Like with the watchOS app, you don't need the default app structure because you'll reuse the one you already have.
+5. You'll share view, model, and resource files from the iOS app with the macOS target.
+   1. In the Project navigator, Command-click to select the following files: LandmarksApp.swift, LandmarkList.swift, LandmarkRow.swift, CircleImage.swift, MapView.swift, and FavoriteButton.swift.
+      1. The first of these is the shared app definition.
+      2. The others are views that will work on macOS.
+   2. Continue Command-clicking to select all the items in the Model and Resources folders, as well as Asset.xcassets.
+      1. These items define the app's data model and resources.
+   3. In the File inspector, add MacLandmarks to the Target Membership for the selected files.
+   4. <img src="./resources/images/sharing_macos_target.png" alt="Sharing macOS Target" width="600"/>
+6. Add a macOS app icon set to match those for the other targets.
+
+   1. Select the Assets.xcasset file in the MackLandmarks group and delete the empty AppIcon item.
+   2. Drag the AppIcon.appiconset folder from the downloaded projects' Resources folder into the MacLandmark's Asset catalog.
+   3. In ContentView in the MacLandmarks group, add LandmarkList as the top level view, with constraints on the frame size.
+      1. The preview no longer builds because the LandmarkList uses LandmarkDetail, but you haven't defined a detail view for the macOS app yet.
+
+   - ```swift
+      import SwiftUI
+
+      struct ContentView: View {
+          var body: some View {
+              LandmarkList()
+                  .frame(minWidth: 700, minHeight: 300)
+          }
+      }
+
+      struct ContentView_Previews: PreviewProvider {
+          static var previews: some View {
+              ContentView()
+                  .environmentObject(ModelData())
+          }
+      }
+     ```
