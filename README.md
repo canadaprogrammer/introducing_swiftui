@@ -63,6 +63,7 @@
       - [Create a Custom Notification Interface](#create-a-custom-notification-interface)
     - [Creating a macOS App](#creating-a-macos-app)
       - [Add a macOS Target to the Project](#add-a-macos-target-to-the-project)
+      - [Create a macOS Detail View](#create-a-macos-detail-view)
 
 ## SwiftUI Essentials
 
@@ -3215,3 +3216,100 @@
           }
       }
      ```
+
+#### Create a macOS Detail View
+
+- Sometimes you can reuse a view across platforms with small adjustments or conditional compilation, but the detail view differs enough for macOS that it's better to create a dedicated view.
+- You'll copy the iOS detail view as a starting point, and then modify it to suit the larger display of macOS.
+
+1. Create a new custom view in the `MacLandmarks` group targeting macOS called `LandmarkDetail`.
+   1. File > New > File, macOS tab, SwiftUI View.
+   2. You now have three files called `LandmarkDetail.swift`.
+   3. Each serves the same purpose in the view hierarchy, but provides an experience tailored to a particular platform.
+2. Copy the iOS detail view contents into the macOS detail view.
+   1. The preview fails because the `navigationBarTitleDisplayMode(_:)` method isn't available in macOS.
+3. Delete the `navigationBarTitleDisplayMode(_:)` modifier and add a `frame` modifier, `.frame(width: 850, height: 700)`, to the preview so you can see more of the content.
+   1. The MapView remains blank unless you start the live preview.
+4. Change the `HStack` holding the park and state to a `VStack` with `leading` alignment, and remove the `Spacer`.
+5. Enclose everything below `MapView` in a `VStack`, and then place the `CircleImage` and the rest of the header in an `HStack`.
+6. Remove the `offset` from the circle, and instead apply a smaller `offset` to the entire `VStack`.
+7. Add a `resizable()` modifier to the image, and constrain the `CircleImage` to be a bit smaller.
+8. Constrain the ScrollView to a maximum width.
+   1. This improves readability when the user makes the window very wide.
+9. Change the FavoriteButton to use the plain button style.
+   1. Using the plain style here makes the button look more like the iOS equivalent.
+10. Add an "Open in Maps" button in a ZStack so that it appears on top of the map in the upper-right corner.
+
+    1. Be suer to include MapKit to be able to create the MKMapItem that you send to Maps.
+
+    - <img src="./resources/images/macos_detail_view.png" alt="macOS Detail View" width="300"/>
+
+    - ```swift
+      import SwiftUI
+      import MapKit
+
+      struct LandmarkDetail: View {
+          @EnvironmentObject var modelData: ModelData
+          var landmark: Landmark
+
+          var landmarkIndex: Int {
+              modelData.landmarks.firstIndex(where: {$0.id == landmark.id})!
+          }
+          var body: some View {
+              ScrollView {
+                  ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
+                      MapView(coordinate: landmark.locationCoordinates)
+                          .ignoresSafeArea(edges: .top)
+                      .frame(height:300)
+                      Button("Open in Maps") {
+                          let destination = MKMapItem(placemark: MKPlacemark(coordinate: landmark.locationCoordinates))
+                          destination.name = landmark.name
+                          destination.openInMaps()
+                      }
+                      .padding()
+                  }
+
+                  VStack(alignment: .leading, spacing: 20) {
+                      HStack(spacing: 24) {
+                          CircleImage(image: landmark.image.resizable())
+                              .frame(width: 160, height: 160)
+
+                          VStack(alignment: .leading) {
+                              HStack {
+                                  Text(landmark.name)
+                                      .font(.title)
+                                  FavoriteButton(isSet: $modelData.landmarks[landmarkIndex].isFavorite)
+                                      .buttonStyle(.plain)
+                              }
+                              VStack(alignment: .leading) {
+                                  Text(landmark.park)
+                                  Text(landmark.state)
+                              }
+                              .font(.subheadline)
+                              .foregroundColor(.secondary)
+                          }
+                      }
+                      Divider()
+
+                      Text("About \(landmark.name)")
+                          .font(.title2)
+                      Text(landmark.description)
+
+                  }
+                  .padding()
+                  .frame(maxWidth: 700)
+                  .offset(y: -50)
+              }
+              .navigationTitle(landmark.name)
+          }
+      }
+
+      struct LandmarkDetail_Previews: PreviewProvider {
+          static let modelData = ModelData()
+          static var previews: some View {
+              LandmarkDetail(landmark: modelData.landmarks[0])
+                  .environmentObject(modelData)
+                  .frame(width: 850, height: 700)
+          }
+      }
+      ```
