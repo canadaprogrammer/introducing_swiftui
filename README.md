@@ -64,6 +64,7 @@
     - [Creating a macOS App](#creating-a-macos-app)
       - [Add a macOS Target to the Project](#add-a-macos-target-to-the-project)
       - [Create a macOS Detail View](#create-a-macos-detail-view)
+      - [Update the Row View](#update-the-row-view)
 
 ## SwiftUI Essentials
 
@@ -3313,3 +3314,61 @@
           }
       }
       ```
+
+#### Update the Row View
+
+- The shared LandmarkRow view works in macOS, but it's worth revisiting to look for improvements given the new visual environment.
+- Because this view is used by all three platforms, you need to be careful that any changes you make work across all of them.
+
+1. Before modifying the row, set up a preview of the list, because the changes you'll make are driven by how the row looks in context.
+   1. Open `LandmarkList.swift` and add a minimum width to the `List`, `List{ }.frame(minWidth:300)`.
+      1. This improves the preview, but also ensures that the list never becomes too small as the user resizes the macOS window.
+   2. Pin the list view preview so that you can see how the row looks in context as you make changes.
+   3. Open `LandmarkRow.swift`
+      1. Add a `.cornerRadius(5)` to the image for a more refined look.
+      2. Wrap the landmark name in a `VStack` and add the park as secondary information.
+      3. Add vertical padding around the contents of the row to give each row a little more breathing room.
+2. The updates improve the look in macOS, but you also need to consider the other platforms that use the list.
+
+   1. Consider watchOS first.
+      1. Choose the WatchLandmarks target to see a watchOS preview of the list.
+         1. The minimum row width isn't appropriate here.
+            1. The best solution is to create a watch-specific list that omits the width constraint.
+      2. Add a new SwiftUI view to the `WatchLandmarks` folder called `LandmarkList.swift` that targets only `WatchLandmarks`, and remove the older file's `WatchLandmarks` target membership.
+      3. Copy the contents of the old `LandmarkList` into the new one, but without the frame modifier.
+         1. The content now has the right width, but each row has too much information.
+      4. Co back to `LandmarkRow` and add an `#if` conditions to prevent the secondary text from appearing in a watchOS build.
+         1. For the row, using conditional compilation is appropriate because the differences are small.
+   2. Consider how your changes work for iOS.
+      1. Choose the `Landmarks` build target to see what the list looks like for iOS.
+         1. The changes work well for iOS, so there's no need to make any updates for that platform.
+
+   - LandmarkRow.swift
+
+     - ```swift
+        var body: some View {
+            HStack {
+                landmark.image
+                    .resizable()
+                    .frame(width: 50, height: 50)
+                    .cornerRadius(5)
+                VStack(alignment:.leading) {
+                    Text(landmark.name)
+                        .bold()
+                    #if !os(watchOS)
+                    Text(landmark.park)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    #endif
+                }
+
+                Spacer()
+
+                if landmark.isFavorite {
+                    Image(systemName: "star.fill")
+                        .foregroundColor(.yellow)
+                }
+            }
+            .padding(.vertical, 4)
+        }
+       ```
