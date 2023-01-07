@@ -65,6 +65,7 @@
       - [Add a macOS Target to the Project](#add-a-macos-target-to-the-project)
       - [Create a macOS Detail View](#create-a-macos-detail-view)
       - [Update the Row View](#update-the-row-view)
+      - [Update the List View](#update-the-list-view)
 
 ## SwiftUI Essentials
 
@@ -3372,3 +3373,87 @@
             .padding(.vertical, 4)
         }
        ```
+
+#### Update the List View
+
+1. Return to the `MacLandmarks` scheme, and in the `LandmarkList` file that targets iOS and macOS, add a `ToolbarItem` containing a `Menu` inside a new `.toolbar` modifier to the `List`.
+   1. You won't be able to see the toolbar updates until you run the app.
+2. Move the favorites Toggle into the `Menu`.
+   1. This moves the toggle into the toolbar in a platform-specific way, which has the additional benefit of making it accessible no matter how long the list of landmarks gets, or how far down the user scrolls.
+3. With more room available, you'll add a new control for filtering the list of landmarks by category.
+   1. Add a `FilterCategory` enumeration to describe filter states.
+      1. Match the case strings to the Category enumeration in the Landmark structure so that you can compare them, and include an all case to turn filtering off.
+   2. Add a filter state variable, defaulting to the all case.
+      1. By storing the filter state in the list view, the user can open multiple list view windows, each with its own filter setting, to be able to look at the data in different ways.
+   3. Update `filteredLandmarks` to take into account the new filter setting, combined with the category of a given landmark.
+   4. Add a `Picker` to the `Menu` to set the filter category.
+      1. Because the filter has only a few items, you use the inline picker style to make them all appear together.
+4. Update the navigation title to match the state of the filter.
+   1. This change will be useful in the iOS app.
+5. Add a second child view to the NavigationView as a placeholder for the second view in wide layouts.
+
+   1. Adding the second child view automatically converts the list to use the sidebar list style.
+
+   - ```swift
+      import SwiftUI
+
+      struct LandmarkList: View {
+          ...
+          @State private var filter = FilterCategory.all
+
+          enum FilterCategory: String, CaseIterable, Identifiable {
+              case all = "All"
+              case lakes = "Lakes"
+              case rivers = "Rivers"
+              case mountains = "Mountains"
+
+              var id: FilterCategory { self }
+          }
+          var filteredLandmarks: [Landmark] {
+              modelData.landmarks.filter { landmark in
+                  (!showFavoritesOnly || landmark.isFavorite)
+                  && (filter == .all || filter.rawValue == landmark.category.rawValue)
+              }
+          }
+          var title: String {
+              let title = filter == .all ? "Landmarks" : filter.rawValue
+              return showFavoritesOnly ? "Favorite \(title)" : title
+          }
+          var body: some View {
+              NavigationView {
+                  List {
+                      ...
+                  }
+                  .navigationTitle(title)
+                  .frame(minWidth: 300)
+                  .toolbar {
+                      ToolbarItem {
+                          Menu {
+                              Picker("Category", selection: $filter) {
+                                  ForEach(FilterCategory.allCases) { category in
+                                      Text(category.rawValue).tag(category)
+                                  }
+                              }
+                              .pickerStyle(.inline)
+                              Toggle(isOn: $showFavoritesOnly) {
+                                  Text("Favorites Only")
+                              }
+                          } label: {
+                              Label("Filter", systemImage: "slider.horizontal.3")
+                          }
+                      }
+                  }
+                  Text("Select a Landmark")
+              }
+          }
+      }
+      ...
+     ```
+
+6. Run the macOS target and see how the menu operates.
+
+   - <video src="macOS_with_filter.mp4" controls="controls" style="max-width: 400px;"></video>
+
+7. Choose the Landmarks build target, and use the live preview to see the new filtering works well for iOS as well.
+
+   - <img src="./resources/images/iOS_with_filter.png" alt="iOS with filter" width="200"/>
