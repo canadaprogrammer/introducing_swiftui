@@ -3436,7 +3436,7 @@
                               }
                               .pickerStyle(.inline)
                               Toggle(isOn: $showFavoritesOnly) {
-                                  Text("Favorites Only")
+                                  Label("Favorites Only", systemImage: "star.fill")
                               }
                           } label: {
                               Label("Filter", systemImage: "slider.horizontal.3")
