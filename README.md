@@ -3452,7 +3452,7 @@
 
 6. Run the macOS target and see how the menu operates.
 
-   - <video src="macOS_with_filter.mp4" controls="controls" style="max-width: 400px;"></video>
+   - <video src="https://user-images.githubusercontent.com/25374253/211121990-3c28bad0-63e9-477b-897c-c10feb8d5486.mp4" controls="controls" style="max-width: 400px;"></video>
 
 7. Choose the Landmarks build target, and use the live preview to see the new filtering works well for iOS as well.
 
