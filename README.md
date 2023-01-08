@@ -66,6 +66,7 @@
       - [Create a macOS Detail View](#create-a-macos-detail-view)
       - [Update the Row View](#update-the-row-view)
       - [Update the List View](#update-the-list-view)
+      - [Add a Built-in Menu Command](#add-a-built-in-menu-command)
 
 ## SwiftUI Essentials
 
@@ -3457,3 +3458,23 @@
 7. Choose the Landmarks build target, and use the live preview to see the new filtering works well for iOS as well.
 
    - <img src="./resources/images/iOS_with_filter.png" alt="iOS with filter" width="200"/>
+
+#### Add a Built-in Menu Command
+
+- When you create an app using the SwiftUI life cycle, the system automatically creates a menu with commonly needed items, like those for closing the front-most window or for quitting the app.
+- SwiftUI lets you add other common commands with built-in behavior, as well as completely custom commands.
+- You'll add a system-provided command that lets the user toggle the sidebar, to be able to get it back after dragging it closed.
+
+1. Return to the MacLandmarks target, run the macOS app, and drag the separator between the list and detail view all the way to the left.
+   1. When you let go of the mouse button, the list disappears with no way to get it back. You'll add a command to fix this.
+2. Add a new Swift file called `LandmarkCommands.swift` and set its targets to include both `macOS` and `iOS`.
+   1. You also target iOS because the shared `LandmarkList` will eventually depend on some of the types you define in this file.
+   2. <img src="./resources/images/landmarkCommands.png" alt="Landmark Commands" width="200"/>
+3. Import `SwiftUI` and add a `LandmarkCommands` structure that conforms to the `Commands` protocol, with a computed body property.
+   1. Like a View structure, a Commands structure requires a computed body property that uses builder semantics, except with commands instead of views.
+4. Add a `SidebarCommands` command to the body.
+   1. This built-in command set includes the command for toggling the sidebar.
+5. To make use of commands in an app, you have to apply them to a scene.
+   1. Open the `LandmarksApp.swift` file, and apply `LandmarkCommands` using the `commands(content:)` scene modifier to `WindowGroup`.
+      1. Scene modifiers work like view modifiers, except that you apply them to scenes instead of views.
+   2. Run the macOS app again, and see that you can use the View > Toggle Sidebar menu (Hide Sidebar / Show Sidebar) command to restore the list view.
