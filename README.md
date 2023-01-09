@@ -3563,4 +3563,4 @@
 
 5. Run the macOS app and try out the new menu item.
 
-   - <video src="LandamrkCommand.mp4" controls="controls" style="max-width: 400px;"></video>
+   - <video src="https://user-images.githubusercontent.com/25374253/211232137-f8ad7df8-0571-4a0f-8fc7-4ca2877eb866.mov" controls="controls" style="max-width: 400px;"></video>
