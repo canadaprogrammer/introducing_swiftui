@@ -67,6 +67,7 @@
       - [Update the Row View](#update-the-row-view)
       - [Update the List View](#update-the-list-view)
       - [Add a Built-in Menu Command](#add-a-built-in-menu-command)
+      - [Add a Custom Menu Command](#add-a-custom-menu-command)
 
 ## SwiftUI Essentials
 
@@ -3478,3 +3479,88 @@
    1. Open the `LandmarksApp.swift` file, and apply `LandmarkCommands` using the `commands(content:)` scene modifier to `WindowGroup`.
       1. Scene modifiers work like view modifiers, except that you apply them to scenes instead of views.
    2. Run the macOS app again, and see that you can use the View > Toggle Sidebar menu (Hide Sidebar / Show Sidebar) command to restore the list view.
+
+#### Add a Custom Menu Command
+
+- You'll add a custom command for toggling the favorite status of the currently selected landmark.
+- To know which landmark is currently selected, you'll use a focused binding.
+
+1. In `LandmarkCommands`, extend the `FocusedValues` structure with a `selectedLandmark` value, using a custom key called `SelectedLandmarkKey`.
+   1. The pattern for defining focused values resembles the pattern for defining new Environment values: Use a private key to read and write a custom property on the system-defined FocusedValues structure.
+2. Add a `@FocusedBinding` property wrapper to track the currently selected landmark.
+   1. You're reading the value here. You'll set it later in the list view, where the user makes the selection.
+3. Add a new `CommandMenu` to your commands called Landmarks.
+
+   1. Add a button to the menu that toggles the selected landmark's favorite status, and that has an appearance that changes depending on the currently selected landmark and its state.
+   2. Add a keyboard shortcut for the menu item with the `keyboardShortcut(_:modifiers:)` modifier.
+      1. SwiftUI automatically shows the keyboard shortcut in the menu.
+
+   - ```swift
+      import SwiftUI
+
+      struct LandmarkCommands: Commands {
+          @FocusedBinding(\.selectedLandmark) var selectedLandmark
+
+          var body: some Commands {
+              SidebarCommands()
+              CommandMenu("Landmark") {
+                  Button("\(selectedLandmark?.isFavorite == true ? "Remove" : "Mark") as Favorite") {
+                      selectedLandmark?.isFavorite.toggle()
+                  }
+                  .keyboardShortcut("f", modifiers: [.shift, .option])
+                  .disabled(selectedLandmark == nil)
+              }
+          }
+      }
+
+      private struct SelectedLandmarkKey: FocusedValueKey {
+          typealias Value = Binding<Landmark>
+      }
+
+      extension FocusedValues {
+          var selectedLandmark: Binding<Landmark>? {
+              get { self[SelectedLandmarkKey.self] }
+              set { self[SelectedLandmarkKey.self] = newValue}
+          }
+      }
+     ```
+
+4. The menu now contains your new command, but you need to set the `selectedLandmark` focused binding for it to work.
+
+   1. In `LandmarkList.swift`, add a state variable for the selected landmark and a computed property that indicates the `index` of the selected landmark.
+   2. Initialize the List with a binding to the selected value, and add a `tag` to the navigation link.
+      1. The tag associates a particular landmark with the given item in the ForEach, which then drives the selection.
+   3. Add the `focusedValue(_:)` modifier to the `NavigationView`, providing a binding the value from the landmarks array.
+      1. You perform a look-up here to ensure that you are modifying the landmark stored in the model, and not a copy.
+
+   - ```swift
+      import SwiftUI
+
+      struct LandmarkList: View {
+          ...
+          @State private var selectedLandmark: Landmark?
+          ...
+          var index: Int? {
+              modelData.landmarks.firstIndex(where: { $0.id == selectedLandmark?.id })
+          }
+          var body: some View {
+              NavigationView {
+                  List(selection: $selectedLandmark) {
+                      ForEach(filteredLandmarks) { landmark in
+                          NavigationLink {
+                              ...
+                          }
+                          .tag(landmark)
+                      }
+                  }
+                  ...
+              }
+              .focusedValue(\.selectedLandmark, $modelData.landmarks[index ?? 0])
+          }
+      }
+      ...
+     ```
+
+5. Run the macOS app and try out the new menu item.
+
+   - <video src="LandamrkCommand.mp4" controls="controls" style="max-width: 400px;"></video>
