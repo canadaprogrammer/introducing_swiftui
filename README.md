@@ -3678,4 +3678,4 @@
 
    1. Notice that the map refreshes whenever you change the zoom level.
 
-   - <video src="settings_scene.mov" controls="controls" style="max-width: 400px;"></video>
+   - <video src="https://user-images.githubusercontent.com/25374253/211434737-a4ca3b3a-8726-4b79-a8e4-9f7a486a4e17.mov" controls="controls" style="max-width: 400px;"></video>
