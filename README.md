@@ -68,6 +68,7 @@
       - [Update the List View](#update-the-list-view)
       - [Add a Built-in Menu Command](#add-a-built-in-menu-command)
       - [Add a Custom Menu Command](#add-a-custom-menu-command)
+      - [Add Preferences with a Settings Scene](#add-preferences-with-a-settings-scene)
 
 ## SwiftUI Essentials
 
@@ -3564,3 +3565,117 @@
 5. Run the macOS app and try out the new menu item.
 
    - <video src="https://user-images.githubusercontent.com/25374253/211232137-f8ad7df8-0571-4a0f-8fc7-4ca2877eb866.mov" controls="controls" style="max-width: 400px;"></video>
+
+#### Add Preferences with a Settings Scene
+
+- Users expect to be able to adjust settings for a maxOS app using the standard Preferences menu item.
+- You'll add preferences to `MacLandmarks` by adding a `Settings` scene.
+- The scene's views define the contents of the preferences window, which you'll use to control the initial zoom level of the MapView.
+- You communicate the value to the map view, and store it persistently, by using the `@AppStorage` property wrapper.
+
+1. Add a control in the MapView that sets the initial zoom to one of three levels: near, medium, or far.
+
+   1. In `MapView.swift`, add a `Zoom` enumeration to characterize the zoom level.
+   2. Add an `@AppStorage` property called `zoom` that takes on the medium zoom level by default.
+      1. Use a storage key that uniquely identifies the parameter like you would when storing items in `UserDefaults`, because that's the underlying mechanism that SwiftUI relies on.
+   3. Change the longitude and latitude delta used to construct the region property to a value that depends on zoom.
+   4. To ensure that SwiftUI refreshes the map whenever delta changes, you'll have to alter the way you calculate and apply the region.
+
+      1. Replace the region state variable, the setRegion method, and the map's onAppear modifier with a computed region property that you pass to the Map initializer as a constant binding.
+
+      - ```swift
+          struct MapView: View {
+              var coordinate: CLLocationCoordinate2D
+
+              @AppStorage("MapView.zoom")
+              private var zoom: Zoom = .medium
+
+              enum Zoom: String, CaseIterable, Identifiable {
+                  case near = "Near"
+                  case medium = "Medium"
+                  case far = "Far"
+
+                  var id: Zoom {
+                      return self
+                  }
+              }
+              var delta: CLLocationDegrees {
+                  switch zoom {
+                  case .near: return 0.02
+                  case .medium: return 0.2
+                  case .far: return 2
+                  }
+              }
+              var body: some View {
+                  Map(coordinateRegion: .constant(region))
+              }
+
+              var region: MKCoordinateRegion {
+                  MKCoordinateRegion(
+                      center: coordinate,
+                      span: MKCoordinateSpan(latitudeDelta: delta, longitudeDelta: delta)
+                  )
+              }
+          }
+        ```
+
+2. Create a Settings scene that controls the stored zoom value.
+
+   1. Create a new SwiftUI view called `LandmarkSettings` that targets only the macOS app.
+   2. Add an `@AppStorage` property that uses the same key as you used in the map view.
+   3. Add a `Picker` that controls the zoom value through a binding.
+      1. You typically use a Form to arrange controls in you settings view.
+
+   - ```swift
+      import SwiftUI
+
+      struct LandmarkSettings: View {
+          @AppStorage("MapView.zoom")
+          private var zoom: MapView.Zoom = .medium
+
+          var body: some View {
+              Form {
+                  Picker("Map Zoom:", selection: $zoom) {
+                      ForEach(MapView.Zoom.allCases) { level in
+                          Text(level.rawValue)
+                      }
+                  }
+                  .pickerStyle(.inline)
+              }
+              .frame(width: 300)
+              .navigationTitle("Landmark Settings")
+              .padding(80)
+          }
+      }
+
+      struct LandmarkSettings_Previews: PreviewProvider {
+          static var previews: some View {
+              LandmarkSettings()
+          }
+      }
+     ```
+
+3. In `LandmarksApp.swift`, add the Settings scene to your app, but only for macOS.
+
+   - ```swift
+      import SwiftUI
+
+      @main
+      struct LandmarksApp: App {
+          @StateObject private var modelData = ModelData()
+          var body: some Scene {
+              ...
+              #if os(macOS)
+              Settings {
+                  LandmarkSettings()
+              }
+              #endif
+          }
+      }
+     ```
+
+4. Run the app and try setting the preferences.
+
+   1. Notice that the map refreshes whenever you change the zoom level.
+
+   - <video src="settings_scene.mov" controls="controls" style="max-width: 400px;"></video>
